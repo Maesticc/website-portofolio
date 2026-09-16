@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { projectCategories, projects } from '../data/content';
 import Section from './Section';
+import { DistantWorldsFX } from './SectionFX';
 import { Reveal, SectionHeading, Tag } from './ui';
 
 /* ---------- Modal detail project ---------- */
@@ -154,7 +155,7 @@ export default function Projects() {
   );
 
   return (
-    <Section id="projects">
+    <Section id="projects" atmosphere={<DistantWorldsFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="03"

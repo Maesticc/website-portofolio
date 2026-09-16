@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { skillCategories, skills } from '../data/content';
 import Section from './Section';
+import { ConstellationFX } from './SectionFX';
 import { Reveal, Tag } from './ui';
 
 /* Jumlah baris keyboard diambil langsung dari data skill. */
@@ -344,7 +345,7 @@ export default function Skills() {
   }, [inView, keyMap, activate, step]);
 
   return (
-    <Section id="skills">
+    <Section id="skills" atmosphere={<ConstellationFX />}>
       <div ref={sectionRef} className="mx-auto max-w-7xl">
         {/* ---------- Header ---------- */}
         <div className="mb-4 flex items-center gap-4">

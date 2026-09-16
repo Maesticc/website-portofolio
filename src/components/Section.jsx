@@ -2,18 +2,22 @@ import { getSurface } from '../data/theme';
 
 /**
  * Section
- * Pembungkus seragam untuk setiap section di halaman.
+ * Pembungkus seragam untuk setiap section, dirancang agar seluruh halaman
+ * terasa sebagai SATU lingkungan yang menerus.
  *
- * Tugasnya:
- *  - Memberi warna latar khas per section, sehingga berpindah section terasa
- *    seperti berpindah halaman meski tetap satu halaman.
- *  - Membuat peralihan warna antar section menyatu, dengan memulai gradien
- *    dari warna section sebelumnya.
- *  - Menjamin tinggi minimal satu layar penuh, supaya warnanya benar-benar
- *    mengisi viewport saat tombol navigasi diklik. Ini yang menjual kesan
- *    "halaman baru".
+ * Perbedaan dari versi lama: section tidak lagi menutup latar dengan permukaan
+ * pekat. Yang ada hanyalah:
+ *   1. tint hue sangat tipis, supaya lingkungan bersama (StarField fixed)
+ *      tetap tembus ke seluruh halaman;
+ *   2. haze lokal lembut di belakang konten, murni untuk keterbacaan teks,
+ *      bukan untuk menutup latar;
+ *   3. slot atmosphere untuk "momen visual" khas section (rasi bintang,
+ *      planet jauh, orbit, sinyal) yang dilapiskan tanpa memutus lingkungan.
  *
- * Memakai min-h-[100dvh], bukan h-screen, agar tidak melompat saat bilah
+ * Tidak ada garis batas keras antar section. Gradien tint dimulai dari warna
+ * section sebelumnya sehingga peralihannya melebur.
+ *
+ * min-h-[100dvh] menjaga tiap section mengisi layar tanpa melompat saat bilah
  * alamat browser mobile muncul dan hilang.
  */
 export default function Section({
@@ -21,33 +25,40 @@ export default function Section({
   children,
   className = '',
   center = true,
+  atmosphere = null,
 }) {
   const { base, previous } = getSurface(id);
 
   return (
     <section
       id={id}
-      className={`relative z-10 flex min-h-[100dvh] flex-col px-6 py-24 lg:px-10 lg:py-28 ${
+      className={`relative flex min-h-[100dvh] flex-col px-6 py-24 lg:px-10 lg:py-28 ${
         center ? 'justify-center' : 'justify-start'
       } ${className}`}
     >
-      {/* Permukaan berwarna. Gradien di 16rem teratas memulai dari warna
-          section sebelumnya, jadi batasnya tidak terlihat sebagai garis. */}
+      {/* Tint hue tipis. Gradien memulai dari tint section sebelumnya, jadi
+          perpindahan warna menyatu tanpa garis potong. Karena alpha kecil,
+          bintang dan nebula di belakang tetap terlihat menembusnya. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: `linear-gradient(180deg, ${previous} 0rem, ${base} 16rem, ${base} 100%)`,
+          background: `linear-gradient(180deg, ${previous} 0%, ${base} 30%, ${base} 100%)`,
         }}
       />
 
-      {/* Garis cahaya tipis di batas atas, penanda halus bahwa ini wilayah baru */}
+      {/* Momen visual khas section, dilapiskan di atas tint namun di belakang
+          konten. Opsional. */}
+      {atmosphere}
+
+      {/* Haze lokal lembut tepat di belakang konten, agar teks tetap terbaca
+          di atas bintang tanpa perlu permukaan pekat. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-nebula/25 to-transparent"
+        className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(60%_50%_at_50%_50%,rgba(6,8,18,0.5),transparent_75%)]"
       />
 
-      <div className="w-full">{children}</div>
+      <div className="relative w-full">{children}</div>
     </section>
   );
 }

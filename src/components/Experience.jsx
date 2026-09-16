@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { experiences } from '../data/content';
 import Section from './Section';
+import { OrbitPathsFX } from './SectionFX';
 import { Reveal, SectionHeading, Tag } from './ui';
 
 export default function Experience() {
   const [openId, setOpenId] = useState(experiences[0]?.id ?? null);
 
   return (
-    <Section id="experience">
+    <Section id="experience" atmosphere={<OrbitPathsFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="04"

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { profile, socials } from '../data/content';
 import Section from './Section';
+import { SignalFX } from './SectionFX';
 import { GlowButton, Reveal, SectionHeading } from './ui';
 
 /**
@@ -59,7 +60,7 @@ export default function Contact() {
     }`;
 
   return (
-    <Section id="contact">
+    <Section id="contact" atmosphere={<SignalFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="05"

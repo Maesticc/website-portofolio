@@ -540,15 +540,47 @@ export default function StarField() {
       resizeTimer = setTimeout(resize, 220);
     }
 
-    /* ---------- paralaks halus lewat transform, bukan menggambar ulang ---------- */
+    /* ---------- paralaks halus ----------
+       Dua sumber gerak digabung pada satu transform:
+         1. pointer: pergeseran kecil mengikuti kursor
+         2. scroll : pergeseran vertikal sangat lambat mengikuti posisi scroll,
+            memberi kesan kamera perlahan bergerak melintasi semesta saat
+            pengguna menelusuri halaman. Faktornya kecil supaya bintang tidak
+            "lari" dari layar, hanya terasa ada kedalaman.
+       Keduanya hanya menggeser wrapper lewat transform, tidak menggambar
+       ulang kanvas, jadi tetap murah. */
+    let pointerNX = 0;
+    let pointerNY = 0;
+    let scrollShift = 0;
+    let parallaxRaf = 0;
+
+    function applyParallax() {
+      parallaxRaf = 0;
+      const x = pointerNX * -12;
+      const y = pointerNY * -8 + scrollShift;
+      wrap.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+    }
+    function queueParallax() {
+      if (!parallaxRaf) parallaxRaf = requestAnimationFrame(applyParallax);
+    }
+
     let pointerAt = 0;
     function onPointerMove(e) {
       const now = performance.now();
       if (now - pointerAt < 70) return;
       pointerAt = now;
-      const nx = (e.clientX / window.innerWidth - 0.5) * 2;
-      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-      wrap.style.transform = `translate3d(${(nx * -12).toFixed(2)}px, ${(ny * -8).toFixed(2)}px, 0)`;
+      pointerNX = (e.clientX / window.innerWidth - 0.5) * 2;
+      pointerNY = (e.clientY / window.innerHeight - 0.5) * 2;
+      queueParallax();
+    }
+
+    function onScroll() {
+      /* Geser maksimal sekitar 40px sepanjang beberapa layar pertama, lalu
+         mendatar. Cukup untuk terasa, tidak sampai mengosongkan langit. */
+      const maxDoc = Math.max(1, window.innerHeight * 3);
+      const p = Math.min(1, window.scrollY / maxDoc);
+      scrollShift = p * -40;
+      queueParallax();
     }
 
     function onVisibility() {
@@ -568,6 +600,8 @@ export default function StarField() {
 
     if (!reduceMotion) {
       window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
       nextMeteorAt = performance.now() + 6000;
       frame = requestAnimationFrame(loop);
     }
@@ -575,9 +609,11 @@ export default function StarField() {
     return () => {
       running = false;
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(parallaxRaf);
       clearTimeout(resizeTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
@@ -587,16 +623,26 @@ export default function StarField() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-void"
     >
+      {/* Wrapper diberi tinggi lebih dan digeser naik sedikit, supaya saat
+          paralaks scroll menggeser isinya, tepi atas/bawah tidak tersingkap. */}
       <div
         ref={wrapRef}
-        className="absolute inset-0 will-change-transform"
+        className="absolute -inset-x-0 -top-14 h-[calc(100%+7rem)] will-change-transform"
         style={{ transition: 'transform 0.5s cubic-bezier(0.32,0.72,0,1)' }}
       >
         {/* Langit: digambar sekali, tidak pernah digambar ulang */}
         <canvas ref={staticRef} className="absolute inset-0 h-full w-full" />
         {/* Bintang berkelip dan meteor */}
         <canvas ref={liveRef} className="absolute inset-0 h-full w-full" />
+
+        {/* Partikel debu antariksa yang mengambang sangat pelan. Hanya
+            beberapa titik lembut, memberi kesan materi melayang di ruang. */}
+        <div className="sf-motes absolute inset-0" />
       </div>
+
+      {/* Film grain sangat tipis, memberi tekstur sinematik dan menyamarkan
+          banding gradien. Tetap diam, tidak dianimasikan, agar hemat. */}
+      <div className="sf-grain absolute inset-0 opacity-[0.05]" />
     </div>
   );
 }
