@@ -13,13 +13,13 @@ A personal portfolio with an outer-space theme, an explorer robot mascot whose e
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Motion](https://img.shields.io/badge/Motion-13-FF4D8D?style=for-the-badge&logo=framer&logoColor=white)](https://motion.dev)
 
+[![Live on Vercel](https://img.shields.io/badge/Live-website--portofolio--maesticc.vercel.app-000000?style=flat-square&logo=vercel&logoColor=white)](https://website-portofolio-maesticc.vercel.app/)
 [![Made by Darren Vincent](https://img.shields.io/badge/Made_by-Darren_Vincent-8B5CF6?style=flat-square)](https://github.com/Maesticc)
 [![License](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](#-license)
-![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)
 
 <br/>
 
-**[✨ Live Demo](#) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [🛠 Tech Stack](#-tech-stack) &nbsp;·&nbsp; [📬 Contact](#-contact)**
+**[✨ Live Demo](https://website-portofolio-maesticc.vercel.app/) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [🛠 Tech Stack](#-tech-stack) &nbsp;·&nbsp; [📬 Contact](#-contact)**
 
 </div>
 
