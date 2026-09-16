@@ -27,12 +27,27 @@ const EASE = [0.22, 1, 0.36, 1];
  *
  * Menerima delay agar tiap baris bisa disusun berurutan.
  */
-function MaskedLine({ children, delay, className = '', reduce }) {
+/**
+ * MaskedLine
+ * Satu baris teks yang MASUK ke layar melalui sebuah mask, seolah tipografi
+ * itu berjalan menuju tempatnya lalu berhenti.
+ *
+ * Wadah luar memakai overflow-hidden, jadi selama bergerak teks yang masih di
+ * luar posisinya tidak terlihat, hanya tampak melintas melalui celah mask.
+ * Geser awal memakai satuan piksel (bukan persen) supaya teks benar benar
+ * berada di luar area terpotong, memberi kesan perjalanan yang tegas.
+ *
+ * dir menentukan arah masuk: 'left' datang dari kiri, 'right' dari kanan.
+ * Gerak horizontal kuat (sekitar 100px) dipadu gerak vertikal sangat halus.
+ * Easing sinematik dengan deselerasi kuat, tanpa pantulan. Setelah selesai,
+ * teks diam total: nilai animate adalah keadaan akhir yang bertahan.
+ */
+function MaskedLine({ children, delay, className = '', reduce, dir = 'left', accent = false }) {
   if (reduce) {
     return (
-      <span className={`block ${className}`}>
+      <span className="block overflow-hidden pb-[0.12em]">
         <motion.span
-          className="block"
+          className={`block ${className}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: delay * 0.6 }}
@@ -42,13 +57,26 @@ function MaskedLine({ children, delay, className = '', reduce }) {
       </span>
     );
   }
+
+  const fromX = dir === 'left' ? -104 : 104;
+
+  /* Baris beraksen memakai background-clip: text. Menganimasikan filter blur
+     pada elemen yang sama akan mematahkan clipping itu dan membuat teksnya
+     tampak hilang, jadi untuk baris aksen blur dilewati. */
+  const initial = accent
+    ? { x: fromX, y: 14, opacity: 0 }
+    : { x: fromX, y: 14, opacity: 0, filter: 'blur(4px)' };
+  const animate = accent
+    ? { x: 0, y: 0, opacity: 1 }
+    : { x: 0, y: 0, opacity: 1, filter: 'blur(0px)' };
+
   return (
-    <span className={`block overflow-hidden pb-[0.12em] ${className}`}>
+    <span className="block overflow-hidden pb-[0.12em]">
       <motion.span
-        className="block will-change-transform"
-        initial={{ y: '110%', opacity: 0, filter: 'blur(6px)' }}
-        animate={{ y: '0%', opacity: 1, filter: 'blur(0px)' }}
-        transition={{ duration: 0.95, ease: EASE, delay }}
+        className={`block will-change-transform ${className}`}
+        initial={initial}
+        animate={animate}
+        transition={{ duration: 0.92, ease: EASE, delay }}
       >
         {children}
       </motion.span>
@@ -69,15 +97,16 @@ function HeroContent() {
   const gazeAttractor = useGazeAttractor();
   const reduce = useReducedMotion();
 
-  /* Jadwal masuk. Perkenalan selesai terbaca dalam sekitar 1,2 detik.
-       intro 0,0s, nama 0,2s, headline 0,45/0,60/0,75s, nav 1,05s. */
+  /* Jadwal masuk. Tiap elemen mulai sekitar 140ms setelah yang sebelumnya.
+       Seluruh rangkaian selesai sekitar 1,3 detik (baris terakhir mulai
+       0,56s, durasi 0,92s). */
   const t = {
     intro: 0,
-    name: 0.2,
-    l1: 0.45,
-    l2: 0.6,
-    l3: 0.75,
-    nav: 1.05,
+    name: 0.14,
+    l1: 0.28,
+    l2: 0.42,
+    l3: 0.56,
+    nav: 1.1,
   };
 
   return (
@@ -136,7 +165,12 @@ function HeroContent() {
             <MaskedLine delay={t.l2} reduce={reduce}>
               {s2}
             </MaskedLine>
-            <MaskedLine delay={t.l3} reduce={reduce} className="hero-accent">
+            <MaskedLine
+              delay={t.l3}
+              reduce={reduce}
+              accent
+              className="hero-accent"
+            >
               {s3}
             </MaskedLine>
           </h1>
