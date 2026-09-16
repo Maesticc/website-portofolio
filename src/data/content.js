@@ -77,19 +77,6 @@ export const socials = [
   { label: 'Email', handle: 'darrenvincent547@gmail.com', url: 'mailto:darrenvincent547@gmail.com' },
 ];
 
-/* -----------------------------------------------------------------------------
- * SKILLS — used by the 3D keyboard in the Skills section.
- *
- * Each skill is one keycap:
- *   key      : the physical keyboard key that triggers this skill
- *   tagline  : the short line shown large when the keycap is active
- *   what     : what the skill is (answers "what is this?")
- *   usedFor  : how I use it
- *   level    : 0-100, used for the proficiency bar
- *   cap      : keycap color, ink: color of the icon/label on the cap
- *
- * These are my nine core skills, laid out as a 3 x 3 keypad.
- * -------------------------------------------------------------------------- */
 export const skills = [
 //Row 1 : Languages & core web
   {
@@ -250,7 +237,7 @@ export const projectCategories = [
   'All',
   'Software Engineering',
   'AI / Machine Learning',
-  'AI & Research',
+  'LLM / RAG',
   'Computer Vision',
 ];
 
@@ -319,7 +306,7 @@ export const projects = [
 {
   id: 'medical-rag-evaluation',
   title: 'Local LLM Medical RAG Evaluation System',
-  category: 'AI & Research',
+  category: 'LLM / RAG',
   course: 'Research Project',
   year: '2026',
   summary:'A research system that evaluates Retrieval-Augmented Generation against non-RAG approaches for medical question answering using local LLMs.',
@@ -347,21 +334,67 @@ export const projects = [
 ------------------------------------------------------------ */
 
 export const experiences = [
-  {
-    id: 'exp-1',
-    org: 'IMAJINA',
-    role: 'Co-Founder',
-    period: 'March 2025 - Present',
-    location: 'Jakarta, Indonesia',
-    description:
-      'Co-founded and managed an event organizer focused on exhibitions and community events. Developed partnerships with vendors, tenants, and event stakeholders while coordinating event planning and execution from concept development to on-site operations.',
-    skills: [
-      'Business Development',
-      'Partnerships',
-      'Event Management',
-      'Leadership',
-    ],
-  },
+{
+  id: 'exp-imajina',
+  org: 'IMAJINA',
+  role: 'Co-Founder',
+  period: 'March 2025 - Present',
+  location: 'Jakarta, Indonesia',
+
+  description:
+    'Co-founded and managed an event organizer focused on exhibitions and community events, overseeing business development, partnerships, event planning, marketing, and on-site operations.',
+
+  skills: [
+    'Business Development',
+    'Event Management',
+    'Marketing',
+    'Partnerships',
+    'Operations',
+    'Leadership',
+  ],
+
+  timeline: [
+    {
+      date: 'June 2026',
+      title: 'IMAJINA Virtual Run 2026',
+      subtitle: 'Co-Founder · Event Management',
+      description:
+        'Co-founded and managed the execution of a virtual running event, overseeing operations, marketing, participant engagement, logistics, communications, and race result coordination.',
+      skills: [
+        'Event Management',
+        'Marketing',
+        'Operations',
+        'Partnerships',
+      ],
+    },
+    {
+      date: 'April 2026',
+      title: 'Alor Food Festival by IMAJINA',
+      subtitle: 'Co-Founder · Event Management',
+      description:
+        'Co-founded and managed a large-scale food festival, overseeing business strategy, operations, marketing, stakeholder relations, tenant acquisition, logistics, and visitor engagement.',
+      skills: [
+        'Business Strategy',
+        'Event Management',
+        'Marketing',
+        'Stakeholder Relations',
+      ],
+    },
+    {
+      date: 'August 2025',
+      title: 'The Taste of SINGKAWANG by IMAJINA',
+      subtitle: 'Co-Founder · Event Management',
+      description:
+        "Co-founded and led a cultural food festival showcasing Singkawang's culinary traditions, coordinating event planning, stakeholder relations, vendor partnerships, marketing, and community engagement.",
+      skills: [
+        'Event Planning',
+        'Partnerships',
+        'Marketing',
+        'Community',
+      ],
+    },
+  ],
+},
 
   {
     id: 'exp-2',
@@ -376,22 +409,31 @@ export const experiences = [
       'Teamwork',
       'Operations',
     ],
-  },
-
-  {
-    id: 'exp-3',
-    org: 'Bina Nusantara Computer Club (BNCC)',
-    role: 'Learning Member',
-    period: 'October 2024 - October 2025',
-    location: 'Jakarta, Indonesia',
-    description:
-      'Completed a Laravel-based backend development training program covering PHP, MVC architecture, Blade templating, CRUD development, database design, REST APIs, authentication, and software testing.',
-    skills: [
-      'PHP',
-      'Laravel',
-      'Backend Development',
-      'REST API',
-      'Database',
+    timeline: [
+      {
+        date: 'March 2025',
+        title: 'Completed the Role',
+        subtitle: 'Production Assistant · Wrap-up',
+        description:
+          'Concluded the role after consistently supporting productions, having grown more confident handling equipment, on-site coordination, and fast-paced shooting schedules.',
+        skills: ['Operations', 'Reliability'],
+      },
+      {
+        date: 'Nov 2024 - Feb 2025',
+        title: 'On-Set Production Support',
+        subtitle: 'Production Assistant · Shoots',
+        description:
+          'Supported photo and video shoots by preparing and maintaining equipment, assisting the crew during production, and helping keep shooting operations running smoothly on set.',
+        skills: ['Production Support', 'Teamwork', 'Equipment Handling'],
+      },
+      {
+        date: 'October 2024',
+        title: 'Joined as Production Assistant',
+        subtitle: 'Production Assistant · Onboarding',
+        description:
+          'Started at PT Dos Pictures Creative, learning the production workflow and the equipment used for photo and video shoots.',
+        skills: ['Onboarding', 'Learning'],
+      },
     ],
   },
 ];

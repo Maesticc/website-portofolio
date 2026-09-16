@@ -172,8 +172,8 @@
 @utility label-mono {
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  font-size: 0.85rem;
 }
 
 @utility glass-panel {

@@ -21,7 +21,7 @@ export default function Experience() {
               <span className="text-aurora">journey so far.</span>
             </>
           }
-          subtitle="My experience spans campus organizations, event committees, mentoring new students, and student leadership. Click each item to see the details."
+          subtitle="A journey through entrepreneurship, event management, production, and technology. Click each experience to explore the details."
         />
 
         {/* Timeline */}
@@ -94,6 +94,51 @@ export default function Experience() {
                                 <Tag key={skill}>{skill}</Tag>
                               ))}
                             </div>
+
+                            {/* Sub-timeline: hanya muncul bila experience ini
+                                punya field `timeline`. Ditampilkan sebagai
+                                garis waktu mini di dalam kartu. */}
+                            {Array.isArray(exp.timeline) &&
+                              exp.timeline.length > 0 && (
+                                <div className="relative mt-7 ml-1 border-l border-white/10 pl-6 sm:pl-7">
+                                  {exp.timeline.map((item, ti) => (
+                                    <div
+                                      key={ti}
+                                      className="relative pb-6 last:pb-0"
+                                    >
+                                      {/* titik di garis waktu mini */}
+                                      <span
+                                        aria-hidden="true"
+                                        className="absolute top-1.5 -left-[1.72rem] h-2 w-2 rounded-full bg-starlight/70 shadow-[0_0_10px_2px_rgba(110,231,255,0.4)] sm:-left-[1.97rem]"
+                                      />
+                                      <p className="label-mono mb-1 text-nebula">
+                                        {item.date}
+                                      </p>
+                                      <h4 className="font-display text-lg leading-snug font-light text-white">
+                                        {item.title}
+                                      </h4>
+                                      {item.subtitle && (
+                                        <p className="mt-0.5 font-mono text-xs tracking-wide text-white/45">
+                                          {item.subtitle}
+                                        </p>
+                                      )}
+                                      {item.description && (
+                                        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/55">
+                                          {item.description}
+                                        </p>
+                                      )}
+                                      {Array.isArray(item.skills) &&
+                                        item.skills.length > 0 && (
+                                          <div className="mt-3 flex flex-wrap gap-1.5">
+                                            {item.skills.map((skill) => (
+                                              <Tag key={skill}>{skill}</Tag>
+                                            ))}
+                                          </div>
+                                        )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                           </div>
                         </motion.div>
                       )}
