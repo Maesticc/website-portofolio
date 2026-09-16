@@ -39,24 +39,20 @@ export const profile = {
   firstName: 'Darren',
   role: 'Computer Science Student',
   tagline: 'Menjelajah kode seperti menjelajah galaksi.',
+  /* Hero: sapaan kecil, nama, lalu pernyataan utama. Pernyataan utama dipecah
+   * per baris persis seperti yang diinginkan. */
+  heroIntro: 'Hello, I am',
+  heroStatement: ['Building interfaces', 'that feel', 'like outer space.'],
+  /* heroHeadline lama tetap disimpan untuk kompatibilitas, tidak dipakai di
+   * hero lagi. */
   heroHeadline: 'Building interfaces that feel\nlike outer space.',
-  heroSubtitle:
-    'Mahasiswa Computer Science yang senang membangun antarmuka modern, pengalaman web interaktif, dan produk digital yang terasa sederhana namun berkesan.',
   location: 'Jakarta, Indonesia',
   email: 'kamu@email.com',
   availableFor:
     'Frontend projects, portfolio website, dan kolaborasi seputar web development, AI, serta desain produk digital.',
-  /* Sapaan maskot robot. Wataknya penasaran, bersahabat, dan suka
-   * menjelajah. Robot menyapa bergiliran dari daftar ini.  [EDIT] */
-  robotGreetings: [
-    'Halo. Aku sedang memetakan sektor ini.',
-    'Sinyalmu terdeteksi. Senang bertemu.',
-    'Gerakkan kursormu, aku ikuti.',
-    'Aku suka mengumpulkan hal-hal menarik.',
-    'Kamu pengunjung pertama hari ini.',
-    'Coba sentuh aku sekali lagi.',
-    'Di balik bukit itu masih banyak yang belum kupetakan.',
-  ],
+  /* Kutipan tetap maskot robot, muncul saat hero dimuat. Terasa seperti robot
+   * sedang berbicara langsung kepada pengunjung.  [EDIT] */
+  robotQuote: ['The universe is vast.', "Let's build something worth exploring."],
   aboutParagraphs: [
     'Hai! Saya Darren Vincent, mahasiswa Computer Science yang tertarik membangun antarmuka web modern, produk berbasis AI, dan pengalaman digital yang terasa sederhana, berguna, dan menyenangkan untuk dipakai.',
     'Saya suka menggabungkan desain visual, frontend development, dan interaksi yang dipikirkan matang untuk mengubah ide rumit menjadi pengalaman digital yang jelas, mudah diakses, dan bermakna.',

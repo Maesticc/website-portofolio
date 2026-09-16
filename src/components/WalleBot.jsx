@@ -66,18 +66,18 @@ export default function WalleBot() {
   );
 
   const [blink, setBlink] = useState(false);
-  const [greeting, setGreeting] = useState(null);
+  const [quoteShown, setQuoteShown] = useState(false);
   const [waving, setWaving] = useState(false);
   const [active, setActive] = useState(false);
 
-  const greetIndex = useRef(0);
-  const hideTimer = useRef(null);
   const waveTimer = useRef(null);
   const blinkTimer = useRef(null);
+  const quoteTimer = useRef(null);
   const lastBlinkAt = useRef(0);
   const activeRef = useRef(false);
 
-  const greetings = profile.robotGreetings ?? ['Halo.'];
+  /* Kutipan tetap, ditampilkan sebagai dua baris. */
+  const quoteLines = profile.robotQuote ?? ['The universe is vast.'];
 
   /* ---------- kedip, dipakai baik berkala maupun sebagai reaksi ---------- */
   const triggerBlink = useCallback((now) => {
@@ -221,19 +221,6 @@ export default function WalleBot() {
     return () => clearTimeout(blinkTimer.current);
   }, [active, triggerBlink]);
 
-  /* ---------- sapaan ---------- */
-  const say = useCallback((text) => {
-    setGreeting(text);
-    clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => setGreeting(null), 4200);
-  }, []);
-
-  const nextGreeting = useCallback(() => {
-    const text = greetings[greetIndex.current % greetings.length];
-    greetIndex.current += 1;
-    return text;
-  }, [greetings]);
-
   const wave = useCallback(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     setWaving(true);
@@ -241,70 +228,77 @@ export default function WalleBot() {
     waveTimer.current = setTimeout(() => setWaving(false), 1500);
   }, []);
 
-  /* Sapaan pembuka, lalu sesekali menyapa lagi. Hanya berjalan selama robot
-     terlihat, supaya tidak berbicara ke layar yang sudah ditinggalkan. */
+  /* Kutipan muncul sekali, sesaat setelah robot terlihat, lalu tetap ada.
+     Tidak berganti dan tidak hilang-timbul, supaya tidak mengganggu. Robot
+     melambai sekali saat kutipan muncul, sebagai sapaan pembuka. */
   useEffect(() => {
-    if (!active) return;
-
-    const hello = setTimeout(() => {
-      say(nextGreeting());
+    if (!active || quoteShown) return;
+    quoteTimer.current = setTimeout(() => {
+      setQuoteShown(true);
       wave();
-    }, 2000);
-
-    const interval = setInterval(() => {
-      if (!document.hidden) say(nextGreeting());
-    }, 19000);
-
-    return () => {
-      clearTimeout(hello);
-      clearInterval(interval);
-    };
-  }, [active, say, nextGreeting, wave]);
+    }, 2600);
+    return () => clearTimeout(quoteTimer.current);
+  }, [active, quoteShown, wave]);
 
   useEffect(
     () => () => {
-      clearTimeout(hideTimer.current);
       clearTimeout(waveTimer.current);
       clearTimeout(blinkTimer.current);
+      clearTimeout(quoteTimer.current);
     },
     [],
   );
 
+  /* Saat robot disentuh, ia melambai dan berkedip. Kutipan dipastikan
+     tampil, tetapi tidak pernah disembunyikan lalu dimunculkan lagi. */
   const handleInteract = () => {
-    say(nextGreeting());
+    setQuoteShown(true);
     wave();
     triggerBlink();
   };
 
   return (
     <div ref={rootRef} className="relative flex w-full flex-col items-center">
-      {/* ---------- Gelembung sapaan ---------- */}
+      {/* ---------- Gelembung kutipan robot ----------
+          Kutipan tetap dua baris. Terasa seperti robot berbicara langsung
+          kepada pengunjung, bukan gelembung chatbot. Muncul sekali dengan
+          fade lembut lalu tetap ada. */}
       <motion.div
         initial={false}
         animate={
-          greeting
-            ? { opacity: 1, y: 0, scale: 1 }
-            : { opacity: 0, y: 8, scale: 0.97 }
+          quoteShown
+            ? { opacity: 1, y: 0 }
+            : { opacity: 0, y: 8 }
         }
-        transition={{ duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
-        className="pointer-events-none absolute -top-1 z-20 max-w-[15rem] -translate-y-full"
-        aria-live="polite"
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute -top-2 z-20 w-max max-w-[17rem] -translate-y-full"
       >
         <div
-          className="relative rounded-2xl px-4 py-2.5 text-center font-mono text-[0.8rem] leading-snug text-white/85"
+          className="relative rounded-2xl px-4 py-3 text-center"
           style={{
-            background: 'rgba(12,16,26,0.82)',
-            border: '1px solid rgba(168,196,240,0.16)',
-            boxShadow: '0 14px 34px -16px rgba(0,0,0,0.9)',
+            background: 'rgba(11,15,24,0.78)',
+            border: '1px solid rgba(168,196,240,0.14)',
+            boxShadow: '0 16px 38px -18px rgba(0,0,0,0.92)',
+            backdropFilter: 'blur(2px)',
           }}
         >
-          {greeting}
+          {quoteLines.map((line, i) => (
+            <span
+              key={i}
+              className={`block font-mono text-[0.78rem] leading-relaxed ${
+                i === 0 ? 'text-white/60' : 'text-white/90'
+              }`}
+            >
+              {line}
+            </span>
+          ))}
+          {/* ekor gelembung */}
           <span
             className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45"
             style={{
-              background: 'rgba(12,16,26,0.82)',
-              borderRight: '1px solid rgba(168,196,240,0.16)',
-              borderBottom: '1px solid rgba(168,196,240,0.16)',
+              background: 'rgba(11,15,24,0.78)',
+              borderRight: '1px solid rgba(168,196,240,0.14)',
+              borderBottom: '1px solid rgba(168,196,240,0.14)',
             }}
           />
         </div>

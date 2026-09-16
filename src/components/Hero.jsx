@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { navLinks, profile } from '../data/content';
 import PlanetHorizon, {
@@ -14,38 +13,37 @@ const HERO_LINKS = HERO_LINK_IDS.map((id) =>
   navLinks.find((l) => l.id === id),
 ).filter(Boolean);
 
-/** Efek mengetik untuk nama di hero. */
-function useTypewriter(text, speed = 92, startDelay = 520) {
-  const [shown, setShown] = useState('');
+/* Kurva easing seragam untuk seluruh hero, terasa punya bobot dan tidak
+ * terburu buru. */
+const EASE = [0.22, 1, 0.36, 1];
 
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setShown(text);
-      return;
-    }
-
-    let i = 0;
-    let interval;
-    const timeout = setTimeout(() => {
-      interval = setInterval(() => {
-        i += 1;
-        setShown(text.slice(0, i));
-        if (i >= text.length) clearInterval(interval);
-      }, speed);
-    }, startDelay);
-
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(interval);
-    };
-  }, [text, speed, startDelay]);
-
-  return shown;
-}
-
-/* Kurva easing seragam untuk seluruh hero, terasa punya bobot. */
-const EASE = [0.32, 0.72, 0, 1];
+/* Varian animasi masuk. Semuanya fade lembut dengan sedikit gerak naik.
+ * Waktunya dirancang seperti perkenalan diri:
+ *   1. "Hello, I am" muncul lebih dulu.
+ *   2. "Darren Vincent" menyusul sesaat kemudian.
+ *   3. Pernyataan utama muncul lebih lambat dan lebih anggun, tiap barisnya
+ *      berurutan.
+ *   4. Navigasi muncul paling akhir. */
+const intro = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE, delay: 0.2 } },
+};
+const name = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE, delay: 0.6 } },
+};
+const statementGroup = {
+  hidden: {},
+  show: { transition: { delayChildren: 1.35, staggerChildren: 0.22 } },
+};
+const statementLine = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 1.05, ease: EASE } },
+};
+const nav = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE, delay: 2.4 } },
+};
 
 export default function Hero() {
   return (
@@ -56,8 +54,7 @@ export default function Hero() {
 }
 
 function HeroContent() {
-  const typed = useTypewriter(profile.name);
-  const [line1, line2] = profile.heroHeadline.split('\n');
+  const [s1, s2, s3] = profile.heroStatement;
   /* Handler yang membuat robot menoleh ke tautan yang sedang disorot. */
   const gazeAttractor = useGazeAttractor();
 
@@ -73,57 +70,57 @@ function HeroContent() {
       <PlanetHorizon />
       <DistantPlanet />
 
-      {/* ================= TEKS (fokus utama) =================
-          Memakai flex-1 dengan min-height otomatis. Kalau ruang vertikal
-          sempit, area ini tidak menyusut di bawah tinggi isinya, melainkan
-          hero yang memanjang. Jadi teks tidak mungkin bertabrakan dengan
-          robot di viewport pendek mana pun. */}
+      {/* ================= TEKS (fokus utama) ================= */}
       <div className="relative z-30 flex flex-1 items-center justify-center px-6 pt-20 lg:px-10">
         <div className="w-full text-center">
-          {/* Sapaan kecil dengan efek mengetik */}
+          {/* 1. Sapaan kecil dan tenang */}
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="mb-6 font-mono text-xs tracking-[0.2em] text-white/40 sm:text-[0.8rem]"
+            variants={intro}
+            initial="hidden"
+            animate="show"
+            className="mb-4 font-mono text-xs tracking-[0.32em] text-white/40 uppercase sm:text-[0.8rem]"
           >
-            Hi, I&apos;m <span className="text-white/75">{typed}</span>
-            <span className="ml-0.5 animate-pulse text-white/35">|</span>
+            {profile.heroIntro}
           </motion.p>
 
-          {/* Judul utama. Titik fokus halaman: tidak ada elemen lain yang
-              boleh menyaingi kontrasnya. */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: EASE }}
-            className="mx-auto max-w-[19ch] font-display font-light tracking-[-0.025em] text-balance text-white"
-            style={{
-              fontSize: 'clamp(2rem, 5.6vw, 3.9rem)',
-              lineHeight: 1.08,
-            }}
+          {/* 2. Nama, personal dan menonjol */}
+          <motion.p
+            variants={name}
+            initial="hidden"
+            animate="show"
+            className="mb-9 font-display font-light tracking-[-0.01em] text-white/90 sm:mb-10"
+            style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.35rem)', lineHeight: 1.1 }}
           >
-            <span className="block">{line1}</span>
-            <span className="block text-white/55">{line2}</span>
+            {profile.name}
+          </motion.p>
+
+          {/* 3. Pernyataan utama, elemen visual terkuat. Tiap baris muncul
+                berurutan dengan transisi yang lebih lambat dan anggun. */}
+          <motion.h1
+            variants={statementGroup}
+            initial="hidden"
+            animate="show"
+            className="mx-auto max-w-[20ch] font-display font-light tracking-[-0.025em] text-balance text-white"
+            style={{ fontSize: 'clamp(2.1rem, 6vw, 4.4rem)', lineHeight: 1.06 }}
+          >
+            <motion.span variants={statementLine} className="block">
+              {s1}
+            </motion.span>
+            <motion.span variants={statementLine} className="block">
+              {s2}
+            </motion.span>
+            <motion.span variants={statementLine} className="block text-white/55">
+              {s3}
+            </motion.span>
           </motion.h1>
 
-          {/* Penjelas singkat */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.48, ease: EASE }}
-            className="mx-auto mt-6 max-w-[46ch] text-sm leading-relaxed text-white/45 sm:text-base"
-          >
-            {profile.heroSubtitle}
-          </motion.p>
-
-          {/* Navigasi bernomor */}
+          {/* 4. Navigasi bernomor, muncul paling akhir */}
           <motion.nav
             aria-label="Navigasi utama"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.62, ease: EASE }}
-            className="mt-8"
+            variants={nav}
+            initial="hidden"
+            animate="show"
+            className="mt-11"
           >
             <ul className="flex flex-wrap items-center justify-center gap-2">
               {HERO_LINKS.map((link, i) => (
@@ -164,7 +161,7 @@ function HeroContent() {
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.9, ease: EASE }}
+          transition={{ duration: 1.1, delay: 1, ease: EASE }}
           className="absolute inset-x-0 flex justify-center"
           style={{ bottom: 'calc(var(--horizon) - 2.1rem)' }}
         >
@@ -177,8 +174,7 @@ function HeroContent() {
 
       {/* ================= TANAH TERDEKAT =================
           Digambar di depan robot, sehingga kakinya tertutup sedikit oleh
-          gundukan tanah dan kabut permukaan. Itu yang membuat robot terbaca
-          berada di dalam lanskap, bukan di depan gambar lanskap. */}
+          gundukan tanah dan kabut permukaan. */}
       <HorizonForeground />
     </section>
   );
