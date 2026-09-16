@@ -11,9 +11,9 @@ export default function About() {
           eyebrow="About Me"
           title={
             <>
-              Di balik antarmuka,
+              Curious by nature,
               <br />
-              <span className="text-aurora">ada rasa penasaran.</span>
+              <span className="text-aurora">driven to create.</span>
             </>
           }
         />
@@ -52,9 +52,8 @@ export default function About() {
           <div>
             <Reveal delay={0.08}>
               <h3 className="mb-8 font-display text-3xl leading-tight font-light text-white sm:text-4xl">
-                Membangun antarmuka
+                Building ideas into real experiences.
                 <br />
-                dengan tujuan yang jelas.
               </h3>
             </Reveal>
 
@@ -90,7 +89,7 @@ export default function About() {
         {/* ---------- Fokus ---------- */}
         <div className="mt-20">
           <Reveal>
-            <p className="label-mono mb-6 text-white/35">Fokus saat ini</p>
+            <p className="label-mono mb-6 text-white/35">Current focus</p>
           </Reveal>
 
           <div className="grid gap-4 sm:grid-cols-3">

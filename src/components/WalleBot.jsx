@@ -360,7 +360,7 @@ export default function WalleBot() {
         onMouseLeave={handleLeave}
         onFocus={handleEnter}
         onBlur={handleLeave}
-        aria-label="Sapa robot"
+        aria-label="Greet the robot"
         style={{ x: bodyShift }}
         whileTap={{ scale: 0.985 }}
         transition={{ type: 'spring', stiffness: 280, damping: 22 }}

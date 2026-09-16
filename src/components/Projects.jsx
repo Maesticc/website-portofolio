@@ -32,7 +32,7 @@ function ProjectModal({ project, onClose }) {
       <motion.div
         role="dialog"
         aria-modal="true"
-        aria-label={`Detail project ${project.title}`}
+        aria-label={`Project details: ${project.title}`}
         initial={{ opacity: 0, y: 26, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 18, scale: 0.98 }}
@@ -43,7 +43,7 @@ function ProjectModal({ project, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          aria-label="Tutup detail project"
+          aria-label="Close project details"
           className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/60 transition hover:border-white/40 hover:text-white"
         >
           ✕
@@ -79,7 +79,7 @@ function ProjectModal({ project, onClose }) {
             rel="noreferrer noopener"
             className="mt-9 inline-flex items-center gap-2 rounded-full border border-nebula/40 bg-nebula/15 px-6 py-3 font-mono text-xs tracking-[0.18em] uppercase text-white transition hover:bg-nebula/30"
           >
-            Buka Project <span aria-hidden="true">↗</span>
+            Open Project <span aria-hidden="true">↗</span>
           </a>
         )}
       </motion.div>
@@ -162,12 +162,12 @@ export default function Projects() {
           eyebrow="Projects"
           title={
             <>
-              Hal-hal yang
+              Things I have
               <br />
-              <span className="text-aurora">sudah saya bangun.</span>
+              <span className="text-aurora">built so far.</span>
             </>
           }
-          subtitle="Kumpulan project akademik dan personal seputar pemrograman, desain antarmuka, pemecahan masalah, dan implementasi praktis. Klik kartunya untuk melihat detail."
+          subtitle="A collection of academic and personal projects around programming, interface design, problem solving, and practical implementation. Click a card to see the details."
         />
 
         {/* Filter kategori */}
@@ -209,7 +209,7 @@ export default function Projects() {
 
         {visible.length === 0 && (
           <p className="text-sm text-white/45">
-            Belum ada project di kategori ini.
+            No projects in this category yet.
           </p>
         )}
       </div>

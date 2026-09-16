@@ -42,19 +42,24 @@ export function smoothScrollTo(id, offset = 0) {
     history.replaceState(null, '', `#${id}`);
   }
 
-  const prefersReduced = window.matchMedia(
-    '(prefers-reduced-motion: reduce)',
-  ).matches;
-
-  /* Reduced-motion: langsung ke tujuan, tanpa animasi panjang. */
-  if (prefersReduced || Math.abs(distance) < 4) {
+  if (Math.abs(distance) < 4) {
     window.scrollTo(0, targetY);
     return;
   }
 
-  /* Durasi proporsional dengan jarak, dibatasi 600ms sampai 1200ms. Jarak
-     jauh tidak jadi terlalu lama, jarak dekat tidak jadi terlalu cepat. */
-  const duration = Math.min(1200, Math.max(600, Math.abs(distance) * 0.5));
+  const prefersReduced = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+
+  /* Durasi proporsional dengan jarak.
+     - Normal        : 600ms sampai 1200ms, terasa sinematik.
+     - Reduced-motion: tetap beranimasi tapi jauh lebih singkat (maks 300ms),
+       karena ini gerak yang DIMINTA pengguna lewat klik, bukan gerak pasif.
+       Ini tetap menghormati preferensi (durasi pendek) sambil memastikan
+       perpindahannya tidak terasa seperti lompatan kasar. */
+  const duration = prefersReduced
+    ? Math.min(300, Math.max(160, Math.abs(distance) * 0.16))
+    : Math.min(1200, Math.max(600, Math.abs(distance) * 0.5));
 
   const startTime = performance.now();
   const animId = ++activeAnimation; // membatalkan animasi sebelumnya bila ada

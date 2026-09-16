@@ -16,12 +16,12 @@ export default function Experience() {
           eyebrow="Experience"
           title={
             <>
-              Jejak
+              The
               <br />
-              <span className="text-aurora">perjalanan.</span>
+              <span className="text-aurora">journey so far.</span>
             </>
           }
-          subtitle="Pengalaman saya mencakup organisasi kampus, kepanitiaan acara, mentoring mahasiswa baru, dan kepemimpinan siswa. Klik setiap item untuk melihat detailnya."
+          subtitle="My experience spans campus organizations, event committees, mentoring new students, and student leadership. Click each item to see the details."
         />
 
         {/* Timeline */}

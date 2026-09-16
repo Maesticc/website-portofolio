@@ -198,14 +198,14 @@ function SkillDetail({ skill }) {
 
             <dl className="space-y-5">
               <div>
-                <dt className="label-mono mb-2 text-nebula">Skill ini apa?</dt>
+                <dt className="label-mono mb-2 text-nebula">What is this?</dt>
                 <dd className="text-sm leading-7 text-white/70 sm:text-[0.95rem]">
                   {skill.what}
                 </dd>
               </div>
               <div>
                 <dt className="label-mono mb-2 text-nebula">
-                  Bagaimana saya memakainya
+                  How I use it
                 </dt>
                 <dd className="text-sm leading-7 text-white/70 sm:text-[0.95rem]">
                   {skill.usedFor}
@@ -235,7 +235,7 @@ function SkillDetail({ skill }) {
               />
             </div>
 
-            <p className="label-mono mt-8 mb-3 text-white/40">Fokus</p>
+            <p className="label-mono mt-8 mb-3 text-white/40">Focus</p>
             <div className="flex flex-wrap gap-2">
               {skill.tags.map((tag) => (
                 <Tag key={tag}>{tag}</Tag>
@@ -361,11 +361,11 @@ export default function Skills() {
 
         <Reveal delay={0.1}>
           <p className="mt-5 max-w-2xl text-base leading-8 text-white/60">
-            Setiap keycap adalah satu teknologi yang saya pakai.{' '}
+            Each keycap is one technology I use.{' '}
             {isTouch
-              ? 'Ketuk salah satu keycap'
-              : 'Arahkan kursor, klik, atau tekan tombol yang tertera di keycap'}{' '}
-            untuk melihat penjelasan skill-nya.
+              ? 'Tap a keycap'
+              : 'Hover, click, or press the key shown on a keycap'}{' '}
+            to see its explanation.
           </p>
         </Reveal>
 
@@ -379,7 +379,7 @@ export default function Skills() {
               <span className="flex items-center gap-2">
                 <kbd className="rounded border border-white/15 px-1.5 py-0.5">←</kbd>
                 <kbd className="rounded border border-white/15 px-1.5 py-0.5">→</kbd>
-                untuk berpindah
+                to move
               </span>
             )}
           </p>

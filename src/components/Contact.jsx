@@ -28,11 +28,11 @@ export default function Contact() {
 
   const validate = () => {
     const next = {};
-    if (!form.name.trim()) next.name = 'Nama masih kosong.';
-    if (!form.email.trim()) next.email = 'Email masih kosong.';
+    if (!form.name.trim()) next.name = 'Name is still empty.';
+    if (!form.email.trim()) next.email = 'Email is still empty.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      next.email = 'Format email belum benar.';
-    if (!form.message.trim()) next.message = 'Tulis pesanmu dulu ya.';
+      next.email = 'Email format is not valid.';
+    if (!form.message.trim()) next.message = 'Please write your message first.';
     return next;
   };
 
@@ -42,8 +42,8 @@ export default function Contact() {
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
-    const subject = `[Portfolio] Pesan dari ${form.name}`;
-    const body = `Nama: ${form.name}\nEmail: ${form.email}\n\n${form.message}`;
+    const subject = `[Portfolio] Message from ${form.name}`;
+    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`;
     window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(body)}`;
@@ -67,19 +67,19 @@ export default function Contact() {
           eyebrow="Contact"
           title={
             <>
-              Mari bicara
+              Let's talk
               <br />
-              <span className="text-aurora">lintas galaksi.</span>
+              <span className="text-aurora">across the galaxy.</span>
             </>
           }
-          subtitle="Terbuka untuk kolaborasi, project, maupun diskusi seputar teknologi dan desain. Kirim pesan lewat form di samping, atau lewat kanal mana pun di bawah."
+          subtitle="Open to collaborations, projects, and discussions around technology and design. Send a message through the form, or reach me on any channel below."
         />
 
         <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_0.9fr]">
           {/* ---------- Kiri: kanal kontak ---------- */}
           <div>
             <Reveal>
-              <p className="label-mono mb-6 text-white/35">Kanal kontak</p>
+              <p className="label-mono mb-6 text-white/35">Contact channels</p>
             </Reveal>
 
             <ul className="space-y-2">
@@ -114,7 +114,7 @@ export default function Contact() {
 
             <Reveal delay={0.3}>
               <div className="glass-panel mt-8 rounded-2xl p-6">
-                <p className="label-mono mb-3 text-white/35">Tersedia untuk</p>
+                <p className="label-mono mb-3 text-white/35">Available for</p>
                 <p className="text-sm leading-7 text-white/60">
                   {profile.availableFor}
                 </p>
@@ -129,7 +129,7 @@ export default function Contact() {
               noValidate
               className="glass-panel rounded-2xl p-7 sm:p-8"
             >
-              <p className="label-mono mb-6 text-white/35">Kirim pesan</p>
+              <p className="label-mono mb-6 text-white/35">Send a message</p>
 
               <div className="space-y-5">
                 <div>
@@ -137,7 +137,7 @@ export default function Contact() {
                     htmlFor="name"
                     className="mb-2 block font-mono text-[0.68rem] tracking-[0.14em] uppercase text-white/45"
                   >
-                    Nama
+                    Name
                   </label>
                   <input
                     id="name"
@@ -146,7 +146,7 @@ export default function Contact() {
                     autoComplete="name"
                     value={form.name}
                     onChange={update('name')}
-                    placeholder="Nama kamu"
+                    placeholder="Your name"
                     aria-invalid={Boolean(errors.name)}
                     aria-describedby={errors.name ? 'name-error' : undefined}
                     className={fieldClass(errors.name)}
@@ -189,7 +189,7 @@ export default function Contact() {
                     htmlFor="message"
                     className="mb-2 block font-mono text-[0.68rem] tracking-[0.14em] uppercase text-white/45"
                   >
-                    Pesan
+                    Message
                   </label>
                   <textarea
                     id="message"
@@ -197,7 +197,7 @@ export default function Contact() {
                     rows={5}
                     value={form.message}
                     onChange={update('message')}
-                    placeholder="Tulis pesanmu di sini..."
+                    placeholder="Write your message here..."
                     aria-invalid={Boolean(errors.message)}
                     aria-describedby={errors.message ? 'message-error' : undefined}
                     className={`${fieldClass(errors.message)} resize-none`}
@@ -211,7 +211,7 @@ export default function Contact() {
               </div>
 
               <GlowButton as="button" type="submit" className="mt-7 w-full justify-center">
-                Kirim Pesan
+                Send Message
               </GlowButton>
 
               <p
@@ -219,8 +219,8 @@ export default function Contact() {
                 className="mt-4 min-h-5 text-center text-xs text-white/45"
               >
                 {sent
-                  ? 'Aplikasi email kamu akan terbuka dengan pesan yang sudah terisi.'
-                  : 'Form ini membuka aplikasi email kamu — tidak ada data yang dikirim ke server.'}
+                  ? 'Your email app will open with the message already filled in.'
+                  : 'This form opens your email app. No data is sent to any server.'}
               </p>
             </form>
           </Reveal>
