@@ -6,6 +6,7 @@ import {
   useScroll,
 } from 'motion/react';
 import { navLinks } from '../data/content';
+import { handleNavClick } from '../lib/smoothScroll';
 
 /* Item yang tampil di pill nav (section home tidak perlu tombol) */
 const ITEMS = navLinks.filter((l) => l.id !== 'home');
@@ -123,6 +124,7 @@ export default function FloatingNav() {
                 <li key={link.id} className="shrink-0">
                   <a
                     href={`#${link.id}`}
+                    onClick={handleNavClick(link.id)}
                     aria-current={isActive ? 'true' : undefined}
                     className={`relative block rounded-full px-3 py-2 font-mono text-[0.64rem] tracking-[0.1em] uppercase whitespace-nowrap transition-colors duration-300 sm:px-4 sm:text-[0.72rem] sm:tracking-[0.12em] ${
                       isActive

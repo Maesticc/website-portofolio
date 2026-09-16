@@ -6,6 +6,7 @@ import PlanetHorizon, {
 } from './PlanetHorizon';
 import { RobotGazeProvider, useGazeAttractor } from './RobotGaze';
 import WalleBot from './WalleBot';
+import { handleNavClick } from '../lib/smoothScroll';
 
 /* Tujuan utama yang ditawarkan di hero. */
 const HERO_LINK_IDS = ['about', 'skills', 'projects', 'experience', 'contact'];
@@ -138,7 +139,7 @@ function HeroContent() {
                 : { opacity: 0.42, y: 0, letterSpacing: '0.32em', filter: 'blur(0px)' }
             }
             transition={{ duration: 1, ease: EASE, delay: t.intro }}
-            className="mb-4 font-mono text-xs text-white uppercase sm:text-[0.8rem]"
+            className="mb-5 font-mono text-sm text-white uppercase sm:text-base"
           >
             {profile.heroIntro}
           </motion.p>
@@ -146,7 +147,7 @@ function HeroContent() {
           {/* 2. Nama: reveal bertopeng, meluncur naik dari balik mask. */}
           <h2
             className="mb-9 font-display font-light tracking-[-0.01em] text-white/90 sm:mb-10"
-            style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.35rem)', lineHeight: 1.14 }}
+            style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)', lineHeight: 1.14 }}
           >
             <MaskedLine delay={t.name} reduce={reduce}>
               {profile.name}
@@ -157,7 +158,7 @@ function HeroContent() {
                 Baris ketiga memakai aksen cahaya yang bergerak lambat. */}
           <h1
             className="mx-auto max-w-[20ch] font-display font-light tracking-[-0.025em] text-balance text-white"
-            style={{ fontSize: 'clamp(2.1rem, 6vw, 4.4rem)', lineHeight: 1.06 }}
+            style={{ fontSize: 'clamp(2.6rem, 7vw, 5.5rem)', lineHeight: 1.06 }}
           >
             <MaskedLine delay={t.l1} reduce={reduce}>
               {s1}
@@ -183,23 +184,24 @@ function HeroContent() {
             transition={{ duration: 0.8, ease: EASE, delay: t.nav }}
             className="mt-11"
           >
-            <ul className="flex flex-wrap items-center justify-center gap-2">
+            <ul className="flex flex-wrap items-center justify-center gap-2.5">
               {HERO_LINKS.map((link, i) => (
                 <li key={link.id}>
                   <a
                     href={`#${link.id}`}
+                    onClick={handleNavClick(link.id)}
                     {...gazeAttractor}
-                    className="group flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-2 transition-colors duration-500 ease-out hover:border-white/30 hover:bg-white/[0.04] active:scale-[0.98]"
+                    className="group flex items-center gap-2 rounded-full border border-white/10 px-4 py-2.5 transition-colors duration-500 ease-out hover:border-white/30 hover:bg-white/[0.04] active:scale-[0.98]"
                   >
-                    <span className="font-mono text-[0.64rem] text-white/30 transition-colors duration-500 group-hover:text-white/55">
+                    <span className="font-mono text-sm text-white/30 transition-colors duration-500 group-hover:text-white/55">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="font-mono text-[0.7rem] tracking-[0.1em] uppercase text-white/65 transition-colors duration-500 group-hover:text-white">
+                    <span className="font-mono text-base tracking-[0.1em] uppercase text-white/65 transition-colors duration-500 group-hover:text-white">
                       {link.label}
                     </span>
                     <span
                       aria-hidden="true"
-                      className="-ml-1 text-[0.65rem] text-white/0 transition-all duration-500 group-hover:ml-0 group-hover:text-white/45"
+                      className="-ml-1 text-sm text-white/0 transition-all duration-500 group-hover:ml-0 group-hover:text-white/45"
                     >
                       ↗
                     </span>

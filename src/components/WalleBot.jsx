@@ -524,6 +524,65 @@ function RobotSVG({
         <circle cx="252" cy="257" r="4" />
       </g>
 
+      {/* ================= PECAHAN BESI =================
+          Serpihan logam yang dikumpulkan sang robot pemulung, berserak di
+          tanah dekat roda. Tiap keping punya sisi kiri yang menangkap cahaya
+          (rgba biru pucat, arah sama dengan lingkungan) dan noda karat, jadi
+          terbaca sebagai besi tua, bukan batu. */}
+      <g>
+        {/* pelat logam bengkok di kiri, di depan roda kiri */}
+        <g transform="rotate(-9 40 250)">
+          <polygon points="20,254 58,249 60,258 22,262" fill="#3c424c" />
+          <polygon points="20,254 58,249 59,252 21,257" fill="rgba(196,222,255,0.3)" />
+          <polygon points="20,254 58,249 60,258 22,262" fill="url(#wbShade)" />
+          <rect x="26" y="253" width="2.2" height="2.2" rx="0.5" fill="#181c22" />
+          <rect x="48" y="251" width="2.2" height="2.2" rx="0.5" fill="#181c22" />
+          <path d="M30 256 q10 3 20 0" stroke="rgba(150,86,40,0.4)" strokeWidth="1.2" fill="none" />
+        </g>
+
+        {/* baut heksagonal kecil */}
+        <g transform="translate(96 260) rotate(12)">
+          <polygon points="0,-4 3.5,-2 3.5,2 0,4 -3.5,2 -3.5,-2" fill="#4a515c" />
+          <polygon points="0,-4 3.5,-2 0,0 -3.5,-2" fill="rgba(196,222,255,0.32)" />
+          <circle cx="0" cy="0" r="1.4" fill="#20242c" />
+        </g>
+
+        {/* serpih logam runcing di kanan, dekat roda kanan */}
+        <g transform="rotate(7 268 256)">
+          <polygon points="250,258 286,250 292,257 268,262" fill="#41474f" />
+          <polygon points="250,258 286,250 288,253 255,258" fill="rgba(196,222,255,0.26)" />
+          <polygon points="250,258 286,250 292,257 268,262" fill="url(#wbShade)" />
+          <path d="M258 258 q14 2 26 -2" stroke="rgba(150,86,40,0.35)" strokeWidth="1" fill="none" />
+        </g>
+
+        {/* roda gigi kecil setengah terbenam di tanah, di kanan jauh */}
+        <g transform="translate(300 261)">
+          <circle r="5.2" fill="#3a4049" />
+          {Array.from({ length: 8 }, (_, i) => {
+            const a = (i / 8) * Math.PI * 2;
+            return (
+              <rect
+                key={i}
+                x={-1}
+                y={-6.6}
+                width="2"
+                height="2.4"
+                fill="#3a4049"
+                transform={`rotate(${(a * 180) / Math.PI})`}
+              />
+            );
+          })}
+          <circle r="5.2" fill="url(#wbShade)" />
+          <path d="M-4 -3 A5.2 5.2 0 0 1 3 -4" stroke="rgba(196,222,255,0.3)" strokeWidth="1" fill="none" />
+          <circle r="1.8" fill="#20242c" />
+        </g>
+
+        {/* kepingan kecil berserak */}
+        <polygon points="112,260 122,257 124,262 114,264" fill="#383e47" transform="rotate(-6 118 260)" />
+        <polygon points="112,260 122,257 123,259 113,262" fill="rgba(196,222,255,0.22)" transform="rotate(-6 118 260)" />
+        <rect x="150" y="261" width="7" height="3" rx="0.6" fill="#3d434c" transform="rotate(8 153 262)" />
+      </g>
+
       {/* ================= RODA TANK KIRI ================= */}
       <g>
         <rect x="4" y="196" width="106" height="66" rx="33" fill="url(#wbTread)" />

@@ -720,16 +720,103 @@ export function HorizonForeground() {
  * Planet kecil jauh di langit. Lapisan kedalaman paling belakang di dalam
  * hero. Sisi kirinya tersinari, mengikuti arah cahaya yang sama.
  * ======================================================================= */
+/* Kawah bulan. Tiap kawah punya tepi tersinari di kiri atas (menghadap cahaya)
+ * dan lantai yang lebih gelap, jadi terbaca cekung, bukan sekadar bintik.
+ * Koordinat dalam viewBox 100x100. */
+const MOON_CRATERS = [
+  { x: 40, y: 34, r: 8.5 },
+  { x: 62, y: 30, r: 5 },
+  { x: 30, y: 56, r: 6 },
+  { x: 56, y: 60, r: 9.5 },
+  { x: 72, y: 52, r: 4 },
+  { x: 46, y: 76, r: 4.5 },
+  { x: 68, y: 74, r: 3 },
+  { x: 24, y: 40, r: 2.6 },
+];
+
 export function DistantPlanet() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute top-[14%] right-[9%] z-0 h-16 w-16 rounded-full sm:h-20 sm:w-20 lg:h-24 lg:w-24"
+      className="pointer-events-none absolute top-[14%] right-[9%] z-0 h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
       style={{
-        background:
-          'radial-gradient(circle at 32% 30%, #3a4761 0%, #212a3a 42%, #10141d 72%, #0a0d13 100%)',
-        boxShadow: `inset 7px 5px 16px -7px rgba(${LIGHT},0.26), 0 0 44px -14px rgba(122,150,200,0.16)`,
+        filter: `drop-shadow(0 0 24px rgba(122,150,200,0.16))`,
       }}
-    />
+    >
+      <svg viewBox="0 0 100 100" className="h-full w-full">
+        <defs>
+          {/* Permukaan bulan: tersinari di kiri atas, menggelap ke kanan bawah */}
+          <radialGradient id="moonBody" cx="34%" cy="30%" r="78%">
+            <stop offset="0%" stopColor="#454f66" />
+            <stop offset="42%" stopColor="#28303f" />
+            <stop offset="74%" stopColor="#141821" />
+            <stop offset="100%" stopColor="#0a0d13" />
+          </radialGradient>
+          {/* Terminator: bayangan halus di sisi kanan bawah */}
+          <radialGradient id="moonShade" cx="30%" cy="26%" r="82%">
+            <stop offset="55%" stopColor="rgba(4,6,12,0)" />
+            <stop offset="100%" stopColor="rgba(4,6,12,0.5)" />
+          </radialGradient>
+          {/* Klip supaya semua detail tetap di dalam lingkaran bulan */}
+          <clipPath id="moonClip">
+            <circle cx="50" cy="50" r="49" />
+          </clipPath>
+        </defs>
+
+        <g clipPath="url(#moonClip)">
+          <circle cx="50" cy="50" r="49" fill="url(#moonBody)" />
+
+          {/* Maria: dataran gelap luas, memberi karakter permukaan */}
+          <ellipse cx="58" cy="62" rx="26" ry="19" fill="rgba(8,11,17,0.34)" />
+          <ellipse cx="38" cy="40" rx="16" ry="13" fill="rgba(8,11,17,0.24)" />
+
+          {/* Kawah */}
+          {MOON_CRATERS.map((c, i) => (
+            <g key={i}>
+              {/* lantai kawah, sedikit lebih gelap dari sekitarnya */}
+              <circle cx={c.x} cy={c.y} r={c.r} fill="rgba(6,9,14,0.4)" />
+              {/* tepi tersinari di sisi menghadap cahaya (kiri atas) */}
+              <path
+                d={`M ${c.x - c.r * 0.72} ${c.y - c.r * 0.72} A ${c.r} ${c.r} 0 0 1 ${c.x + c.r * 0.72} ${c.y - c.r * 0.72}`}
+                fill="none"
+                stroke={`rgba(${LIGHT},0.32)`}
+                strokeWidth={Math.max(0.5, c.r * 0.16)}
+                strokeLinecap="round"
+                transform={`rotate(-45 ${c.x} ${c.y})`}
+              />
+              {/* bayangan tipis di dinding seberang (kanan bawah) */}
+              <path
+                d={`M ${c.x + c.r * 0.7} ${c.y + c.r * 0.7} A ${c.r} ${c.r} 0 0 1 ${c.x - c.r * 0.7} ${c.y + c.r * 0.7}`}
+                fill="none"
+                stroke="rgba(3,5,10,0.5)"
+                strokeWidth={Math.max(0.5, c.r * 0.14)}
+                strokeLinecap="round"
+                transform={`rotate(-45 ${c.x} ${c.y})`}
+              />
+            </g>
+          ))}
+
+          {/* butiran halus permukaan */}
+          <g fill="rgba(6,9,14,0.28)">
+            <circle cx="48" cy="24" r="1.4" />
+            <circle cx="66" cy="44" r="1.2" />
+            <circle cx="34" cy="70" r="1.3" />
+            <circle cx="78" cy="64" r="1" />
+            <circle cx="52" cy="48" r="1.1" />
+          </g>
+
+          {/* terminator di atas semuanya */}
+          <circle cx="50" cy="50" r="49" fill="url(#moonShade)" />
+          {/* sorotan tepi tipis di busur yang menghadap cahaya */}
+          <path
+            d="M 12 30 A 49 49 0 0 1 44 8"
+            fill="none"
+            stroke={`rgba(${LIGHT},0.28)`}
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+        </g>
+      </svg>
+    </div>
   );
 }
