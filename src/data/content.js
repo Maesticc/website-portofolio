@@ -181,7 +181,7 @@ export const skills = [
 {
   id: 'computer-vision',
   name: 'Computer Vision',
-  key: 'CV',
+  key: 'V',
   row: 1,
   category: 'AI / ML',
   level: 80,
@@ -254,12 +254,14 @@ export const skillCategories = [
 /* -----------------------------------------------------------------------------
  * PROJECTS  [EDIT]
  * -------------------------------------------------------------------------- */
+/* Filter chips. These MUST match the `category` used by the projects below,
+ * otherwise a project disappears when its filter is selected. */
 export const projectCategories = [
   'All',
-  'Frontend',
-  'AI (Machine Learning, NLP, Computer Vision)',
   'Software Engineering',
-  'Data',
+  'AI / Machine Learning',
+  'AI & Research',
+  'Computer Vision',
 ];
 
 export const projects = [
@@ -278,7 +280,7 @@ export const projects = [
 {
   id: 'smart-triage',
   title: 'Smart Triage',
-  category: 'AI & Healthcare',
+  category: 'AI / Machine Learning',
   course: 'AI Project',
   year: '2026',
   summary : 'An AI-powered healthcare system designed to support emergency triage and hospital allocation.',
@@ -290,7 +292,7 @@ export const projects = [
 {
   id: 'rps-battle-arena',
   title: 'RPS Battle Arena',
-  category: 'AI & Game',
+  category: 'AI / Machine Learning',
   course: 'Personal Project',
   year: '2026',
   summary: 'An adaptive Rock Paper Scissors game that learns from the player and predicts their next move.',
@@ -303,7 +305,7 @@ export const projects = [
 {
   id: 'symptom-disease-classification',
   title: 'Symptom to Disease Classification',
-  category: 'AI & Healthcare',
+  category: 'AI / Machine Learning',
   course: 'Team Project',
   year: '2026',
   summary:'A machine learning system that classifies diseases from textual symptom descriptions using multiple classification algorithms.',
@@ -315,8 +317,8 @@ export const projects = [
 {
   id: 'symptom-disease-classifier',
   title: 'Symptom to Disease Classifier',
-  category: 'AI & Healthcare',
-  course: 'NLP / Machine Learning Project',
+  category: 'Team Project',
+  course: 'AI / Machine Learningt',
   year: '2026',
   summary: 'A Streamlit-based machine learning application that predicts diseases from symptom descriptions using a Naive Bayes classifier.',
   detail: 'Built an interactive NLP application that preprocesses symptom descriptions using tokenization, stopword removal, and lemmatization before using a Naive Bayes classifier to predict disease categories. The application provides prediction results and confidence scores through a Streamlit web interface.',
@@ -336,6 +338,18 @@ export const projects = [
   highlight: 'Experimental comparison of RAG and No-RAG medical question answering using local LLMs and retrieval evaluation metrics.',
   url: 'https://github.com/Maesticc/crosslingual-medical-rag',
 },
+{
+  id: 'bukacv',
+  title: 'BukaCV Document Scanner',
+  category: 'Computer Vision',
+  course: 'Team Project',
+  year: '2026',
+  summary:'A document scanning application that uses computer vision to detect, transform, and enhance documents from images.',
+  detail:'Built a Flask backend that provides image processing APIs for grayscale conversion, contour detection, perspective transformation, image enhancement, and PDF export. The scanning pipeline detects document boundaries using contour analysis and applies perspective transformation to produce a scanned document. The frontend is built with Flutter to provide the user interface for interacting with the scanning features.',
+  stack: ['Python','Flask','OpenCV','Flutter','Computer Vision'],
+  highlight:'Computer vision-based document scanning with contour detection, perspective transformation, image enhancement, and PDF export.',
+  url: 'https://github.com/Maesticc/bukacv',
+}
 ];
 
 /* -----------------------------------------------------------------------------
