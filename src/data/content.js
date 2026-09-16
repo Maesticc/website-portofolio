@@ -282,7 +282,7 @@ export const projects = [
   title: 'Smart Triage',
   category: 'AI / Machine Learning',
   course: 'AI Project',
-  year: '2026',
+  year: '2025',
   summary : 'An AI-powered healthcare system designed to support emergency triage and hospital allocation.',
   detail: 'Developed an NLP-based triage system using a fine-tuned Hugging Face Transformer model to classify patient symptoms into risk levels and recommend healthcare facilities based on risk and available capacity. The application also includes hospital dispatch simulation, interactive maps, and capacity monitoring.',
   stack: ['Python','Streamlit', 'Hugging Face Transformers','PyTorch', 'Folium'],
