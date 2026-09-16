@@ -1,9 +1,3 @@
-/* =============================================================================
- * content.js — the single file to edit for personalization.
- * All text, projects, experience, and skills come from here.
- * Look for [EDIT] markers for the parts you should replace with real data.
- * ========================================================================== */
-
 import {
   SiMysql,
   SiLaravel,
@@ -251,11 +245,7 @@ export const skillCategories = [
   { name: 'Tooling', description: 'Version control and collaboration.' },
 ];
 
-/* -----------------------------------------------------------------------------
- * PROJECTS  [EDIT]
- * -------------------------------------------------------------------------- */
-/* Filter chips. These MUST match the `category` used by the projects below,
- * otherwise a project disappears when its filter is selected. */
+// PROJECTS  [EDIT]
 export const projectCategories = [
   'All',
   'Software Engineering',
@@ -352,48 +342,56 @@ export const projects = [
 }
 ];
 
-/* -----------------------------------------------------------------------------
- * EXPERIENCE  [EDIT]
- * -------------------------------------------------------------------------- */
+/* ------------------------------------------------------------
+   EXPERIENCE  [EDIT]
+------------------------------------------------------------ */
+
 export const experiences = [
   {
     id: 'exp-1',
-    org: 'Campus Organization Name',
-    role: 'Core Team Member',
-    period: '2026 — present',
+    org: 'IMAJINA',
+    role: 'Co-Founder',
+    period: 'March 2025 - Present',
     location: 'Jakarta, Indonesia',
     description:
-      'Helped create structured learning materials so new members could grasp the fundamentals of the technologies the community discussed more quickly.',
-    skills: ['Teamwork', 'Critical Thinking', 'Documentation'],
+      'Co-founded and managed an event organizer focused on exhibitions and community events. Developed partnerships with vendors, tenants, and event stakeholders while coordinating event planning and execution from concept development to on-site operations.',
+    skills: [
+      'Business Development',
+      'Partnerships',
+      'Event Management',
+      'Leadership',
+    ],
   },
+
   {
     id: 'exp-2',
-    org: 'Committee Name',
-    role: 'Committee Member',
-    period: '2025',
+    org: 'PT Dos Pictures Creative',
+    role: 'Production Assistant',
+    period: 'October 2024 - March 2025',
     location: 'Jakarta, Indonesia',
     description:
-      'Maintained communication among participants and supported the flow of discussion throughout the event series.',
-    skills: ['Communication', 'Coordination', 'Event Management'],
+      'Assisted in preparing production equipment for photo and video shoots, ensuring equipment readiness and providing on-site operational support. Collaborated with production teams to facilitate smooth shooting operations.',
+    skills: [
+      'Production Support',
+      'Teamwork',
+      'Operations',
+    ],
   },
+
   {
     id: 'exp-3',
-    org: 'University Name',
-    role: 'Freshmen Leader',
-    period: '2025',
+    org: 'Bina Nusantara Computer Club (BNCC)',
+    role: 'Learning Member',
+    period: 'October 2024 - October 2025',
     location: 'Jakarta, Indonesia',
     description:
-      'Guided new students through orientation while developing leadership, empathy, and collaboration skills.',
-    skills: ['Leadership', 'Public Speaking', 'Mentoring'],
-  },
-  {
-    id: 'exp-4',
-    org: 'School Name',
-    role: 'Student Event Coordinator',
-    period: '2023 — 2024',
-    location: 'Indonesia',
-    description:
-      'Led and coordinated several school events focused on student engagement and leadership development.',
-    skills: ['Event Planning', 'Team Leadership', 'Community Building'],
+      'Completed a Laravel-based backend development training program covering PHP, MVC architecture, Blade templating, CRUD development, database design, REST APIs, authentication, and software testing.',
+    skills: [
+      'PHP',
+      'Laravel',
+      'Backend Development',
+      'REST API',
+      'Database',
+    ],
   },
 ];
