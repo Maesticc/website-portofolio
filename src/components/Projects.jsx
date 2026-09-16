@@ -162,12 +162,12 @@ export default function Projects() {
           eyebrow="Projects"
           title={
             <>
-              Things I have
+              Things I've built
               <br />
-              <span className="text-aurora">built so far.</span>
+              <span className="text-aurora">along the way.</span>
             </>
           }
-          subtitle="A collection of academic and personal projects around programming, interface design, problem solving, and practical implementation. Click a card to see the details."
+          subtitle="A collection of projects exploring AI, software development, computer vision, and practical problem solving."
         />
 
         {/* Filter kategori */}

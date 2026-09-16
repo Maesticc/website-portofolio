@@ -355,7 +355,7 @@ export default function Skills() {
 
         <Reveal>
           <h2 className="font-display text-5xl leading-none font-light tracking-tight text-white sm:text-6xl md:text-7xl">
-            <span className="text-aurora">Control Panel</span>
+            <span className="text-aurora">What I Work With ⭐</span>
           </h2>
         </Reveal>
 
