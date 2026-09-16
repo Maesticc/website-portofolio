@@ -62,7 +62,7 @@ export default function Contact() {
     <Section id="contact">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          index="07"
+          index="05"
           eyebrow="Contact"
           title={
             <>

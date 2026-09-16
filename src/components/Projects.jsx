@@ -157,7 +157,7 @@ export default function Projects() {
     <Section id="projects">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          index="04"
+          index="03"
           eyebrow="Projects"
           title={
             <>

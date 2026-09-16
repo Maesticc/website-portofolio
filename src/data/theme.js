@@ -27,9 +27,7 @@ export const SECTION_SURFACES = {
   skills: `rgba(19, 14, 44, ${A})`, // ungu nebula
   projects: `rgba(6, 24, 32, ${A})`, //teal dalam
   experience: `rgba(25, 13, 35, ${A})`, // plum
-  notes: `rgba(10, 17, 36, ${A})`, //  indigo slate
-  contact: `rgba(28, 11, 27, ${A})`, //wine gelap
-  footer: `rgba(4, 3, 12, 0.97)`, //   kembali ke void, menutup lingkaran
+  contact: `rgba(28, 11, 27, ${A})`, //wine gelap, section terakhir
 };
 
 /* Urutan section di halaman. Dipakai untuk mencari warna section sebelumnya
@@ -40,9 +38,7 @@ export const SECTION_ORDER = [
   'skills',
   'projects',
   'experience',
-  'notes',
   'contact',
-  'footer',
 ];
 
 /**

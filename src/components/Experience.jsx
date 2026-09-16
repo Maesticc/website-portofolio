@@ -11,7 +11,7 @@ export default function Experience() {
     <Section id="experience">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          index="05"
+          index="04"
           eyebrow="Experience"
           title={
             <>

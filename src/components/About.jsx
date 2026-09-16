@@ -7,7 +7,7 @@ export default function About() {
     <Section id="about">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          index="02"
+          index="01"
           eyebrow="About"
           title={
             <>

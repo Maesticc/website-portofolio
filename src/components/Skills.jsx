@@ -348,7 +348,7 @@ export default function Skills() {
       <div ref={sectionRef} className="mx-auto max-w-7xl">
         {/* ---------- Header ---------- */}
         <div className="mb-4 flex items-center gap-4">
-          <span className="label-mono text-nebula">03 — Skills</span>
+          <span className="label-mono text-nebula">02 — Skills</span>
           <span className="h-px w-16 bg-gradient-to-r from-nebula/70 to-transparent" />
         </div>
 

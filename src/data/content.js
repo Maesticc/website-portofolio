@@ -88,7 +88,6 @@ export const navLinks = [
   { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Projects' },
   { id: 'experience', label: 'Experience' },
-  { id: 'notes', label: 'Notes' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -96,10 +95,10 @@ export const navLinks = [
  * SOCIAL LINKS  [EDIT] — ganti URL-nya
  * -------------------------------------------------------------------------- */
 export const socials = [
-  { label: 'GitHub', handle: '@username', url: 'https://github.com/' },
-  { label: 'LinkedIn', handle: '/in/username', url: 'https://linkedin.com/' },
-  { label: 'Instagram', handle: '@username', url: 'https://instagram.com/' },
-  { label: 'Email', handle: 'kamu@email.com', url: 'mailto:kamu@email.com' },
+  { label: 'GitHub', url: 'https://github.com/Maesticc' },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/darren-vincent-a22549326/' },
+  { label: 'Instagram',  url: 'https://www.instagram.com/darren.vincent_/' },
+  { label: 'Email',  url: 'darrenvincent547@gmail.com' },
 ];
 
 /* -----------------------------------------------------------------------------
@@ -661,35 +660,4 @@ export const experiences = [
   },
 ];
 
-/* -----------------------------------------------------------------------------
- * NOTES / BLOG  [EDIT]
- * -------------------------------------------------------------------------- */
-export const notes = [
-  {
-    id: 'note-1',
-    title: 'Membuat keyboard 3D hanya dengan CSS',
-    excerpt:
-      'Catatan tentang perspective, transform-style, dan cara menyusun keycap yang terasa punya ketebalan tanpa library 3D.',
-    date: 'Sep 2026',
-    readTime: '6 menit',
-    tag: 'CSS',
-  },
-  {
-    id: 'note-2',
-    title: 'Starfield ringan di canvas',
-    excerpt:
-      'Bagaimana menggambar ribuan bintang dengan paralaks tanpa membuat frame rate jatuh.',
-    date: 'Agu 2026',
-    readTime: '5 menit',
-    tag: 'Canvas',
-  },
-  {
-    id: 'note-3',
-    title: 'Belajar TypeScript setelah nyaman dengan JavaScript',
-    excerpt:
-      'Urutan belajar yang menurut saya paling masuk akal, dan kesalahan yang sempat saya ulang berkali-kali.',
-    date: 'Jul 2026',
-    readTime: '7 menit',
-    tag: 'TypeScript',
-  },
-];
+

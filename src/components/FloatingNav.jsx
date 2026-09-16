@@ -7,10 +7,8 @@ import {
 } from 'motion/react';
 import { navLinks } from '../data/content';
 
-/* Item yang tampil di pill nav. Home tidak perlu tombol, dan section notes
-   tidak dipakai jadi ikut dikeluarkan. */
-const HIDDEN = ['home', 'notes'];
-const ITEMS = navLinks.filter((l) => !HIDDEN.includes(l.id));
+/* Item yang tampil di pill nav (section home tidak perlu tombol) */
+const ITEMS = navLinks.filter((l) => l.id !== 'home');
 
 /* Berapa lama harus diam sebelum pill muncul */
 const IDLE_DELAY = 650;
