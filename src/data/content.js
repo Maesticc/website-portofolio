@@ -50,9 +50,9 @@ export const profile = {
   email: 'kamu@email.com',
   availableFor:
     'Frontend projects, portfolio website, dan kolaborasi seputar web development, AI, serta desain produk digital.',
-  /* Kutipan tetap maskot robot, muncul saat hero dimuat. Terasa seperti robot
-   * sedang berbicara langsung kepada pengunjung.  [EDIT] */
-  robotQuote: ['The universe is vast.', "Let's build something worth exploring."],
+  /* Kutipan maskot robot, muncul di samping robot saat disorot atau diketuk.
+   * Terasa seperti robot berbicara kepada pengunjung.  [EDIT] */
+  robotQuote: 'Every idea is a world waiting to be explored.',
   aboutParagraphs: [
     'Hai! Saya Darren Vincent, mahasiswa Computer Science yang tertarik membangun antarmuka web modern, produk berbasis AI, dan pengalaman digital yang terasa sederhana, berguna, dan menyenangkan untuk dipakai.',
     'Saya suka menggabungkan desain visual, frontend development, dan interaksi yang dipikirkan matang untuk mengubah ide rumit menjadi pengalaman digital yang jelas, mudah diakses, dan bermakna.',

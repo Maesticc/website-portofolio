@@ -66,18 +66,22 @@ export default function WalleBot() {
   );
 
   const [blink, setBlink] = useState(false);
-  const [quoteShown, setQuoteShown] = useState(false);
   const [waving, setWaving] = useState(false);
   const [active, setActive] = useState(false);
 
+  /* Kutipan hanya tampil saat robot disorot (desktop) atau diketuk (mobile).
+     side menentukan gelembung muncul di kanan atau kiri robot, dipilih
+     berdasarkan ruang yang aman agar tidak menabrak apa pun. */
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [quoteSide, setQuoteSide] = useState('right');
+
   const waveTimer = useRef(null);
   const blinkTimer = useRef(null);
-  const quoteTimer = useRef(null);
+  const tapHideTimer = useRef(null);
   const lastBlinkAt = useRef(0);
   const activeRef = useRef(false);
 
-  /* Kutipan tetap, ditampilkan sebagai dua baris. */
-  const quoteLines = profile.robotQuote ?? ['The universe is vast.'];
+  const quote = profile.robotQuote ?? 'Hello.';
 
   /* ---------- kedip, dipakai baik berkala maupun sebagai reaksi ---------- */
   const triggerBlink = useCallback((now) => {
@@ -228,77 +232,121 @@ export default function WalleBot() {
     waveTimer.current = setTimeout(() => setWaving(false), 1500);
   }, []);
 
-  /* Kutipan muncul sekali, sesaat setelah robot terlihat, lalu tetap ada.
-     Tidak berganti dan tidak hilang-timbul, supaya tidak mengganggu. Robot
-     melambai sekali saat kutipan muncul, sebagai sapaan pembuka. */
-  useEffect(() => {
-    if (!active || quoteShown) return;
-    quoteTimer.current = setTimeout(() => {
-      setQuoteShown(true);
-      wave();
-    }, 2600);
-    return () => clearTimeout(quoteTimer.current);
-  }, [active, quoteShown, wave]);
-
   useEffect(
     () => () => {
       clearTimeout(waveTimer.current);
       clearTimeout(blinkTimer.current);
-      clearTimeout(quoteTimer.current);
+      clearTimeout(tapHideTimer.current);
     },
     [],
   );
 
-  /* Saat robot disentuh, ia melambai dan berkedip. Kutipan dipastikan
-     tampil, tetapi tidak pernah disembunyikan lalu dimunculkan lagi. */
+  /* Memilih sisi gelembung yang aman.
+     Lebar gelembung diperkirakan, lalu dicek: apakah muat di kanan robot
+     tanpa keluar layar? kalau tidak, coba kiri. Ini menjaga kutipan tidak
+     pernah menimpa navigasi di tengah maupun keluar dari tepi layar. */
+  const chooseSide = useCallback(() => {
+    const el = rootRef.current;
+    if (!el) return 'right';
+    const r = el.getBoundingClientRect();
+    const need = 210; // lebar gelembung + jarak + margin
+    const rightRoom = window.innerWidth - r.right;
+    const leftRoom = r.left;
+    if (rightRoom >= need) return 'right';
+    if (leftRoom >= need) return 'left';
+    /* dua duanya sempit: pilih yang lebih lega (openQuote sudah mencegah
+       kasus benar benar tidak muat, jadi ini hanya jaring pengaman) */
+    return rightRoom >= leftRoom ? 'right' : 'left';
+  }, []);
+
+  /* Ada cukup ruang untuk gelembung di salah satu sisi tanpa keluar layar?
+     Di layar sempit, robot memenuhi lebar sehingga kedua sisi mustahil. Dalam
+     kasus itu gelembung tidak ditampilkan, sesuai prinsip bahwa navigasi dan
+     tata letak lebih diutamakan daripada kutipan. */
+  const hasRoom = useCallback(() => {
+    const el = rootRef.current;
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    const need = 210; // lebar gelembung + jarak + margin
+    return window.innerWidth - r.right >= need || r.left >= need;
+  }, []);
+
+  const openQuote = useCallback(() => {
+    if (!hasRoom()) return;
+    setQuoteSide(chooseSide());
+    setQuoteOpen(true);
+  }, [chooseSide, hasRoom]);
+
+  const closeQuote = useCallback(() => setQuoteOpen(false), []);
+
+  /* Desktop: buka saat disorot, tutup saat kursor pergi. */
+  const handleEnter = () => {
+    if (window.matchMedia('(hover: none)').matches) return;
+    openQuote();
+  };
+  const handleLeave = () => {
+    if (window.matchMedia('(hover: none)').matches) return;
+    closeQuote();
+  };
+
+  /* Klik atau ketuk: robot melambai dan berkedip. Di perangkat sentuh,
+     kutipan ditampilkan sebentar lalu ditutup sendiri, supaya tidak
+     menetap dan mengganggu tata letak. */
   const handleInteract = () => {
-    setQuoteShown(true);
     wave();
     triggerBlink();
+    if (window.matchMedia('(hover: none)').matches) {
+      openQuote();
+      clearTimeout(tapHideTimer.current);
+      tapHideTimer.current = setTimeout(closeQuote, 3600);
+    }
   };
+
+  const onRight = quoteSide === 'right';
 
   return (
     <div ref={rootRef} className="relative flex w-full flex-col items-center">
       {/* ---------- Gelembung kutipan robot ----------
-          Kutipan tetap dua baris. Terasa seperti robot berbicara langsung
-          kepada pengunjung, bukan gelembung chatbot. Muncul sekali dengan
-          fade lembut lalu tetap ada. */}
+          Muncul di SAMPING robot, bukan di atas kepalanya, supaya tidak
+          pernah menabrak navigasi maupun headline. Sisinya dipilih dinamis
+          menurut ruang yang tersedia. Kecil dan menyatu dengan karakter,
+          bukan gelembung chatbot. Tampil hanya saat disorot atau diketuk. */}
       <motion.div
         initial={false}
         animate={
-          quoteShown
-            ? { opacity: 1, y: 0 }
-            : { opacity: 0, y: 8 }
+          quoteOpen
+            ? { opacity: 1, x: 0, scale: 1 }
+            : { opacity: 0, x: onRight ? -8 : 8, scale: 0.96 }
         }
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none absolute -top-2 z-20 w-max max-w-[17rem] -translate-y-full"
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        aria-hidden={!quoteOpen}
+        className={`pointer-events-none absolute top-[22%] z-30 w-[10.5rem] ${
+          onRight ? 'left-full ml-3' : 'right-full mr-3'
+        }`}
       >
         <div
-          className="relative rounded-2xl px-4 py-3 text-center"
+          className="relative rounded-xl px-3.5 py-2.5 text-left"
           style={{
-            background: 'rgba(11,15,24,0.78)',
-            border: '1px solid rgba(168,196,240,0.14)',
-            boxShadow: '0 16px 38px -18px rgba(0,0,0,0.92)',
+            background: 'rgba(11,15,24,0.82)',
+            border: '1px solid rgba(168,196,240,0.15)',
+            boxShadow: '0 14px 32px -16px rgba(0,0,0,0.92)',
             backdropFilter: 'blur(2px)',
           }}
         >
-          {quoteLines.map((line, i) => (
-            <span
-              key={i}
-              className={`block font-mono text-[0.78rem] leading-relaxed ${
-                i === 0 ? 'text-white/60' : 'text-white/90'
-              }`}
-            >
-              {line}
-            </span>
-          ))}
-          {/* ekor gelembung */}
+          <span className="block font-mono text-[0.74rem] leading-relaxed text-white/85">
+            {quote}
+          </span>
+          {/* ekor kecil mengarah ke robot */}
           <span
-            className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45"
+            className={`absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 ${
+              onRight ? '-left-1.5' : '-right-1.5'
+            }`}
             style={{
-              background: 'rgba(11,15,24,0.78)',
-              borderRight: '1px solid rgba(168,196,240,0.14)',
-              borderBottom: '1px solid rgba(168,196,240,0.14)',
+              background: 'rgba(11,15,24,0.82)',
+              borderLeft: onRight ? '1px solid rgba(168,196,240,0.15)' : 'none',
+              borderBottom: onRight ? '1px solid rgba(168,196,240,0.15)' : 'none',
+              borderRight: onRight ? 'none' : '1px solid rgba(168,196,240,0.15)',
+              borderTop: onRight ? 'none' : '1px solid rgba(168,196,240,0.15)',
             }}
           />
         </div>
@@ -308,6 +356,10 @@ export default function WalleBot() {
       <motion.button
         type="button"
         onClick={handleInteract}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        onFocus={handleEnter}
+        onBlur={handleLeave}
         aria-label="Sapa robot"
         style={{ x: bodyShift }}
         whileTap={{ scale: 0.985 }}

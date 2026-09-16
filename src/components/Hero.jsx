@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { navLinks, profile } from '../data/content';
 import PlanetHorizon, {
   DistantPlanet,
@@ -13,37 +13,48 @@ const HERO_LINKS = HERO_LINK_IDS.map((id) =>
   navLinks.find((l) => l.id === id),
 ).filter(Boolean);
 
-/* Kurva easing seragam untuk seluruh hero, terasa punya bobot dan tidak
- * terburu buru. */
+/* Kurva easing sinematik, dipakai seragam di seluruh hero. */
 const EASE = [0.22, 1, 0.36, 1];
 
-/* Varian animasi masuk. Semuanya fade lembut dengan sedikit gerak naik.
- * Waktunya dirancang seperti perkenalan diri:
- *   1. "Hello, I am" muncul lebih dulu.
- *   2. "Darren Vincent" menyusul sesaat kemudian.
- *   3. Pernyataan utama muncul lebih lambat dan lebih anggun, tiap barisnya
- *      berurutan.
- *   4. Navigasi muncul paling akhir. */
-const intro = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE, delay: 0.2 } },
-};
-const name = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE, delay: 0.6 } },
-};
-const statementGroup = {
-  hidden: {},
-  show: { transition: { delayChildren: 1.35, staggerChildren: 0.22 } },
-};
-const statementLine = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 1.05, ease: EASE } },
-};
-const nav = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE, delay: 2.4 } },
-};
+/**
+ * MaskedLine
+ * Satu baris teks yang tersingkap dari balik mask.
+ *
+ * Teks berada di dalam wadah overflow-hidden. Pada keadaan awal, teks digeser
+ * turun sejauh tingginya sendiri sehingga tersembunyi di bawah garis potong
+ * mask, sekaligus sedikit buram. Saat tampil, teks meluncur naik ke tempatnya
+ * dan menjadi tajam. Inilah reveal bertopeng yang diminta, bukan sekadar fade.
+ *
+ * Menerima delay agar tiap baris bisa disusun berurutan.
+ */
+function MaskedLine({ children, delay, className = '', reduce }) {
+  if (reduce) {
+    return (
+      <span className={`block ${className}`}>
+        <motion.span
+          className="block"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: delay * 0.6 }}
+        >
+          {children}
+        </motion.span>
+      </span>
+    );
+  }
+  return (
+    <span className={`block overflow-hidden pb-[0.12em] ${className}`}>
+      <motion.span
+        className="block will-change-transform"
+        initial={{ y: '110%', opacity: 0, filter: 'blur(6px)' }}
+        animate={{ y: '0%', opacity: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.95, ease: EASE, delay }}
+      >
+        {children}
+      </motion.span>
+    </span>
+  );
+}
 
 export default function Hero() {
   return (
@@ -55,8 +66,19 @@ export default function Hero() {
 
 function HeroContent() {
   const [s1, s2, s3] = profile.heroStatement;
-  /* Handler yang membuat robot menoleh ke tautan yang sedang disorot. */
   const gazeAttractor = useGazeAttractor();
+  const reduce = useReducedMotion();
+
+  /* Jadwal masuk. Perkenalan selesai terbaca dalam sekitar 1,2 detik.
+       intro 0,0s, nama 0,2s, headline 0,45/0,60/0,75s, nav 1,05s. */
+  const t = {
+    intro: 0,
+    name: 0.2,
+    l1: 0.45,
+    l2: 0.6,
+    l3: 0.75,
+    nav: 1.05,
+  };
 
   return (
     <section
@@ -73,53 +95,58 @@ function HeroContent() {
       {/* ================= TEKS (fokus utama) ================= */}
       <div className="relative z-30 flex flex-1 items-center justify-center px-6 pt-20 lg:px-10">
         <div className="w-full text-center">
-          {/* 1. Sapaan kecil dan tenang */}
+          {/* 1. Intro: letter-spacing menyempit, buram menjadi tajam,
+                posisi turun menyettel ke tempatnya. */}
           <motion.p
-            variants={intro}
-            initial="hidden"
-            animate="show"
-            className="mb-4 font-mono text-xs tracking-[0.32em] text-white/40 uppercase sm:text-[0.8rem]"
+            initial={
+              reduce
+                ? { opacity: 0 }
+                : { opacity: 0, y: 8, letterSpacing: '0.55em', filter: 'blur(4px)' }
+            }
+            animate={
+              reduce
+                ? { opacity: 1 }
+                : { opacity: 0.42, y: 0, letterSpacing: '0.32em', filter: 'blur(0px)' }
+            }
+            transition={{ duration: 1, ease: EASE, delay: t.intro }}
+            className="mb-4 font-mono text-xs text-white uppercase sm:text-[0.8rem]"
           >
             {profile.heroIntro}
           </motion.p>
 
-          {/* 2. Nama, personal dan menonjol */}
-          <motion.p
-            variants={name}
-            initial="hidden"
-            animate="show"
+          {/* 2. Nama: reveal bertopeng, meluncur naik dari balik mask. */}
+          <h2
             className="mb-9 font-display font-light tracking-[-0.01em] text-white/90 sm:mb-10"
-            style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.35rem)', lineHeight: 1.1 }}
+            style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.35rem)', lineHeight: 1.14 }}
           >
-            {profile.name}
-          </motion.p>
+            <MaskedLine delay={t.name} reduce={reduce}>
+              {profile.name}
+            </MaskedLine>
+          </h2>
 
-          {/* 3. Pernyataan utama, elemen visual terkuat. Tiap baris muncul
-                berurutan dengan transisi yang lebih lambat dan anggun. */}
-          <motion.h1
-            variants={statementGroup}
-            initial="hidden"
-            animate="show"
+          {/* 3. Headline: tiap baris tersingkap terpisah dari balik mask.
+                Baris ketiga memakai aksen cahaya yang bergerak lambat. */}
+          <h1
             className="mx-auto max-w-[20ch] font-display font-light tracking-[-0.025em] text-balance text-white"
             style={{ fontSize: 'clamp(2.1rem, 6vw, 4.4rem)', lineHeight: 1.06 }}
           >
-            <motion.span variants={statementLine} className="block">
+            <MaskedLine delay={t.l1} reduce={reduce}>
               {s1}
-            </motion.span>
-            <motion.span variants={statementLine} className="block">
+            </MaskedLine>
+            <MaskedLine delay={t.l2} reduce={reduce}>
               {s2}
-            </motion.span>
-            <motion.span variants={statementLine} className="block text-white/55">
+            </MaskedLine>
+            <MaskedLine delay={t.l3} reduce={reduce} className="hero-accent">
               {s3}
-            </motion.span>
-          </motion.h1>
+            </MaskedLine>
+          </h1>
 
-          {/* 4. Navigasi bernomor, muncul paling akhir */}
+          {/* 4. Navigasi: muncul paling akhir dengan fade lembut. */}
           <motion.nav
             aria-label="Navigasi utama"
-            variants={nav}
-            initial="hidden"
-            animate="show"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: EASE, delay: t.nav }}
             className="mt-11"
           >
             <ul className="flex flex-wrap items-center justify-center gap-2">
@@ -152,8 +179,8 @@ function HeroContent() {
 
       {/* ================= ZONA ROBOT =================
           Ruang ini ikut perhitungan tata letak (bukan absolut), sehingga
-          selalu tersedia untuk robot dan cakrawala. Inilah yang mencegah
-          tabrakan dengan teks. */}
+          selalu tersedia untuk robot dan cakrawala, dan mencegah tabrakan
+          dengan teks. */}
       <div
         className="relative z-10 shrink-0"
         style={{ height: 'calc(var(--horizon) + var(--bot-h) - 2.1rem)' }}

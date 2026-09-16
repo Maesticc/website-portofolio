@@ -32,6 +32,18 @@
   }
 }
 
+/* Aksen headline: cahaya lembut yang bergerak sangat lambat melintasi teks.
+   Ungu redam, biru redam, dan putih. Sengaja halus, bukan neon dan bukan
+   kilau mencolok. */
+@keyframes hero-accent-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
 /* ---------- Base ---------- */
 @layer base {
   * {
@@ -112,6 +124,30 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/* Aksen "like outer space." Gradien lebar yang bergeser sangat lambat,
+   memberi kesan cahaya bergerak pelan melintasi teks tanpa berkelip. */
+@utility hero-accent {
+  background-image: linear-gradient(
+    100deg,
+    rgba(233, 232, 255, 0.92) 0%,
+    rgba(150, 138, 224, 0.92) 26%,
+    rgba(126, 162, 214, 0.92) 50%,
+    rgba(233, 232, 255, 0.92) 74%,
+    rgba(150, 138, 224, 0.92) 100%
+  );
+  background-size: 260% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: hero-accent-drift 14s linear infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-accent {
+    animation: none;
+  }
 }
 
 /* 3D keyboard helpers (Skills section) */
