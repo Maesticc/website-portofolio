@@ -494,8 +494,7 @@ export default function Skills() {
         {/* ---------- Legenda kategori ---------- */}
         <Reveal delay={0.1}>
           <div className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-            {skillCategories.map((cat) => {
-              const count = skills.filter((s) => s.category === cat.name).length;
+            {skillCategories.map((cat, i) => {
               return (
                 <div
                   key={cat.name}
@@ -506,7 +505,7 @@ export default function Skills() {
                       {cat.name}
                     </p>
                     <span className="font-mono text-[0.7rem] text-white/30">
-                      {String(count).padStart(2, '0')}
+                      {String(i + 1).padStart(2, '0')}
                     </span>
                   </div>
                   <p className="mt-1.5 text-sm leading-6 text-white/45">

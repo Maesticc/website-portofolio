@@ -237,8 +237,8 @@ export const skills = [
 
 /* Skill categories + short descriptions, shown below the keyboard. */
 export const skillCategories = [
-  { name: 'Web', description: 'Languages and frameworks for the web.' },
   { name: 'AI / ML', description: 'Machine learning, NLP, and vision in Python.' },
+  { name: 'Web', description: 'Languages and frameworks for the web.' },
   { name: 'Language', description: 'Programming fundamentals and OOP.' },
   { name: 'Data', description: 'Designing and querying databases.' },
   { name: 'Design', description: 'Prototyping before building.' },
