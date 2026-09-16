@@ -7,8 +7,8 @@ import PlanetHorizon, {
 import { RobotGazeProvider, useGazeAttractor } from './RobotGaze';
 import WalleBot from './WalleBot';
 
-/* Empat tujuan utama yang ditawarkan di hero. */
-const HERO_LINK_IDS = ['about', 'skills', 'projects', 'contact'];
+/* Tujuan utama yang ditawarkan di hero. */
+const HERO_LINK_IDS = ['about', 'skills', 'projects', 'experience', 'contact'];
 const HERO_LINKS = HERO_LINK_IDS.map((id) =>
   navLinks.find((l) => l.id === id),
 ).filter(Boolean);
