@@ -140,6 +140,7 @@ export default function StarField() {
   const liveRef = useRef(null);
   const wrapRef = useRef(null);
   const twinklers = useRef([]);
+  const glowSprite = useRef(null);
 
   useEffect(() => {
     const staticCanvas = staticRef.current;
@@ -551,13 +552,12 @@ export default function StarField() {
        ulang kanvas, jadi tetap murah. */
     let pointerNX = 0;
     let pointerNY = 0;
-    let scrollShift = 0;
     let parallaxRaf = 0;
 
     function applyParallax() {
       parallaxRaf = 0;
       const x = pointerNX * -12;
-      const y = pointerNY * -8 + scrollShift;
+      const y = pointerNY * -8;
       wrap.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
     }
     function queueParallax() {
@@ -574,14 +574,12 @@ export default function StarField() {
       queueParallax();
     }
 
-    function onScroll() {
-      /* Geser maksimal sekitar 40px sepanjang beberapa layar pertama, lalu
-         mendatar. Cukup untuk terasa, tidak sampai mengosongkan langit. */
-      const maxDoc = Math.max(1, window.innerHeight * 3);
-      const p = Math.min(1, window.scrollY / maxDoc);
-      scrollShift = p * -40;
-      queueParallax();
-    }
+    /* Paralaks scroll sengaja DIHILANGKAN. Menggeser lapisan langit (dua kanvas
+       seukuran layar) di setiap frame scroll memaksa compositing/repaint besar
+       terus-menerus, dan itulah penyebab utama scroll terasa berat. Latar tetap
+       terasa "satu semesta menerus" karena posisinya fixed; tidak perlu ikut
+       bergerak saat scroll. Paralaks pointer tetap ada karena hanya berjalan
+       saat kursor bergerak, bukan saat menggulir. */
 
     function onVisibility() {
       if (document.hidden) {
@@ -600,8 +598,6 @@ export default function StarField() {
 
     if (!reduceMotion) {
       window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
       nextMeteorAt = performance.now() + 6000;
       frame = requestAnimationFrame(loop);
     }
@@ -613,7 +609,6 @@ export default function StarField() {
       clearTimeout(resizeTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
@@ -623,12 +618,12 @@ export default function StarField() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-void"
     >
-      {/* Wrapper diberi tinggi lebih dan digeser naik sedikit, supaya saat
-          paralaks scroll menggeser isinya, tepi atas/bawah tidak tersingkap. */}
+      {/* Wrapper diberi tinggi lebih dan digeser naik sedikit supaya tepi
+          atas/bawah tidak tersingkap saat paralaks pointer menggesernya. */}
       <div
         ref={wrapRef}
         className="absolute -inset-x-0 -top-14 h-[calc(100%+7rem)] will-change-transform"
-        style={{ transition: 'transform 0.5s cubic-bezier(0.32,0.72,0,1)' }}
+        style={{ transition: 'transform 0.2s ease-out' }}
       >
         {/* Langit: digambar sekali, tidak pernah digambar ulang */}
         <canvas ref={staticRef} className="absolute inset-0 h-full w-full" />

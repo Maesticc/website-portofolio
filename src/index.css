@@ -188,13 +188,17 @@
 }
 
 @utility glass-panel {
+  /* Tanpa backdrop-filter. Blur di-backdrop memaksa browser mengambil ulang dan
+     mengaburkan latar di belakang tiap panel saat panel bergerak melewati
+     viewport, dan dengan banyak kartu itulah penyebab utama scroll tersendat.
+     Sebagai gantinya latar dibuat sedikit lebih pekat sehingga tetap terbaca
+     sebagai kaca di atas bintang, tanpa biaya repaint per-frame. */
   background: linear-gradient(
     145deg,
-    rgba(124, 92, 255, 0.09),
-    rgba(10, 7, 24, 0.72)
+    rgba(30, 24, 54, 0.82),
+    rgba(10, 7, 24, 0.9)
   );
   border: 1px solid var(--color-cosmic-line);
-  backdrop-filter: blur(14px);
 }
 
 @utility text-aurora {

@@ -30,7 +30,11 @@ function ProjectThumb({ project, className = '' }) {
           alt={`${project.title} preview`}
           loading="lazy"
           onError={() => setFailed(true)}
-          className="h-full w-full object-cover object-top"
+          className={`h-full w-full ${
+            project.fit === 'contain'
+              ? 'object-contain p-3'
+              : 'object-cover object-top'
+          }`}
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">

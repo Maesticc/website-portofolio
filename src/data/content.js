@@ -299,7 +299,8 @@ export const projects = [
 },
 {
   id: 'symptom-disease-classification',
-  image: '/projects/machinelearning.jpeg',
+  image: '/projects/machine.jpeg',
+  fit: 'contain',
   title: 'Symptom to Disease Classification',
   category: 'Team Project',
   course: 'AI / Machine Learning',
