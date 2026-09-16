@@ -9,7 +9,7 @@ export default function Experience() {
   const [openId, setOpenId] = useState(experiences[0]?.id ?? null);
 
   return (
-    <Section id="experience" atmosphere={<OrbitPathsFX />}>
+    <Section id="experience" center={false} atmosphere={<OrbitPathsFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="04"

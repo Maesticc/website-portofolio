@@ -122,12 +122,23 @@
   }
 
   html {
+    /* Ukuran font dasar. Dibiarkan mendekati default (16px) supaya pada
+       tampilan desktop 100% teks terasa nyaman, tidak kebesaran. Sedikit
+       lebih besar hanya di layar sangat lebar. */
+    font-size: 100%; /* 16px */
+
     /* Scroll halus ditangani JavaScript (lihat lib/smoothScroll.js) dengan
        kurva sinematik yang bisa diatur, jadi scroll-behavior dibiarkan auto
        agar tidak bertabrakan dengan animasi itu. */
     scroll-behavior: auto;
     /* Nol, supaya setiap section berhenti tepat di tepi atas viewport. */
     scroll-padding-top: 0;
+  }
+
+  @media (min-width: 1536px) {
+    html {
+      font-size: 106.25%; /* ~17px di layar sangat lebar */
+    }
   }
 
   body {

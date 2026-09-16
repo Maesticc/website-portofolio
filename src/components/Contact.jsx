@@ -1,229 +1,80 @@
-import { useState } from 'react';
-import { profile, socials } from '../data/content';
+import { socials } from '../data/content';
 import Section from './Section';
 import { SignalFX } from './SectionFX';
-import { GlowButton, Reveal, SectionHeading } from './ui';
+import { Reveal, SectionHeading } from './ui';
 
 /**
- * Form kontak.
- *
- * Secara default form ini TIDAK mengirim data ke pihak ketiga:
- * isi form dirangkai menjadi tautan `mailto:` dan dibuka di aplikasi email
- * milik pengunjung. Jadi tidak ada backend dan tidak ada data yang dikirim
- * ke server mana pun.
- *
- * [OPSIONAL] Kalau nanti kamu mau form terkirim otomatis, kamu bisa pakai
- * layanan seperti Web3Forms / Formspree: ganti isi fungsi handleSubmit
- * menjadi fetch POST ke endpoint layanan tersebut beserta access key kamu.
+ * Contact
+ * Section penutup. Disederhanakan menjadi hanya kanal kontak: setiap kanal
+ * tampil sebagai kartu dengan logo/ikon di kirinya, nama kanal, dan handle.
+ * Tidak ada form; tiap kartu langsung menuju profil atau membuka email.
  */
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState({});
-  const [sent, setSent] = useState(false);
-
-  const update = (field) => (e) => {
-    setForm((f) => ({ ...f, [field]: e.target.value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
-  };
-
-  const validate = () => {
-    const next = {};
-    if (!form.name.trim()) next.name = 'Name is still empty.';
-    if (!form.email.trim()) next.email = 'Email is still empty.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      next.email = 'Email format is not valid.';
-    if (!form.message.trim()) next.message = 'Please write your message first.';
-    return next;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const found = validate();
-    setErrors(found);
-    if (Object.keys(found).length > 0) return;
-
-    const subject = `[Portfolio] Message from ${form.name}`;
-    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`;
-    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`;
-
-    setSent(true);
-    setForm({ name: '', email: '', message: '' });
-  };
-
-  const fieldClass = (hasError) =>
-    `w-full rounded-xl border bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-white/25 transition duration-200 focus:bg-white/[0.07] focus:outline-none ${
-      hasError
-        ? 'border-rose-400/60 focus:border-rose-400'
-        : 'border-white/12 focus:border-nebula'
-    }`;
-
   return (
-    <Section id="contact" atmosphere={<SignalFX />}>
+    <Section id="contact" center={false} fullHeight={false} atmosphere={<SignalFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="05"
           eyebrow="Contact"
           title={
             <>
-              Let's talk
+              Let's build
               <br />
-              <span className="text-aurora">across the galaxy.</span>
+              <span className="text-aurora">something meaningful.</span>
             </>
           }
-          subtitle="Open to collaborations, projects, and discussions around technology and design. Send a message through the form, or reach me on any channel below."
+          subtitle="I'm open to collaborations, internship opportunities, and interesting projects in AI, software, and technology. Let's connect."
         />
 
-        <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_0.9fr]">
-          {/* ---------- Kiri: kanal kontak ---------- */}
-          <div>
-            <Reveal>
-              <p className="label-mono mb-6 text-white/35">Contact channels</p>
-            </Reveal>
+        <div className="mt-14 max-w-xl">
+          <Reveal>
+            <p className="label-mono mb-6 text-white/35">Contact channels</p>
+          </Reveal>
 
-            <ul className="space-y-2">
-              {socials.map((social, i) => (
+          <ul className="space-y-3">
+            {socials.map((social, i) => {
+              const Icon = social.Icon;
+              const url = social.url || '#';
+              const isExternal = !url.startsWith('mailto:');
+              return (
                 <Reveal key={social.label} delay={i * 0.07}>
                   <li>
                     <a
-                      href={social.url}
-                      target={social.url.startsWith('mailto:') ? undefined : '_blank'}
+                      href={url}
+                      target={isExternal ? '_blank' : undefined}
                       rel="noreferrer noopener"
-                      className="group flex items-center justify-between gap-4 rounded-xl border border-white/8 px-5 py-4 transition duration-300 hover:border-nebula/40 hover:bg-white/[0.04]"
+                      className="group flex items-center gap-4 rounded-2xl border border-white/8 px-5 py-4 transition duration-300 hover:border-nebula/40 hover:bg-white/[0.04]"
                     >
-                      <span className="flex items-center gap-4">
-                        <span className="font-display text-lg font-light text-white/85 transition group-hover:text-white">
+                      {/* Logo/ikon kanal */}
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-white/70 transition duration-300 group-hover:border-nebula/40 group-hover:text-white">
+                        {Icon ? <Icon className="h-5 w-5" /> : null}
+                      </span>
+
+                      {/* Nama kanal + handle */}
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-display text-lg font-light text-white/90 transition group-hover:text-white">
                           {social.label}
                         </span>
-                        <span className="font-mono text-xs text-white/35">
-                          {social.handle}
-                        </span>
+                        {social.handle && (
+                          <span className="block truncate font-mono text-xs text-white/40">
+                            {social.handle}
+                          </span>
+                        )}
                       </span>
+
+                      {/* Panah */}
                       <span
                         aria-hidden="true"
-                        className="text-white/35 transition-transform duration-300 group-hover:rotate-45 group-hover:text-starlight"
+                        className="text-white/30 transition-transform duration-300 group-hover:rotate-45 group-hover:text-starlight"
                       >
                         ↗
                       </span>
                     </a>
                   </li>
                 </Reveal>
-              ))}
-            </ul>
-
-            <Reveal delay={0.3}>
-              <div className="glass-panel mt-8 rounded-2xl p-6">
-                <p className="label-mono mb-3 text-white/35">Available for</p>
-                <p className="text-sm leading-7 text-white/60">
-                  {profile.availableFor}
-                </p>
-              </div>
-            </Reveal>
-          </div>
-
-          {/* ---------- Kanan: form ---------- */}
-          <Reveal delay={0.12}>
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="glass-panel rounded-2xl p-7 sm:p-8"
-            >
-              <p className="label-mono mb-6 text-white/35">Send a message</p>
-
-              <div className="space-y-5">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="mb-2 block font-mono text-[0.68rem] tracking-[0.14em] uppercase text-white/45"
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    value={form.name}
-                    onChange={update('name')}
-                    placeholder="Your name"
-                    aria-invalid={Boolean(errors.name)}
-                    aria-describedby={errors.name ? 'name-error' : undefined}
-                    className={fieldClass(errors.name)}
-                  />
-                  {errors.name && (
-                    <p id="name-error" className="mt-2 text-xs text-rose-300">
-                      {errors.name}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block font-mono text-[0.68rem] tracking-[0.14em] uppercase text-white/45"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    value={form.email}
-                    onChange={update('email')}
-                    placeholder="nama@email.com"
-                    aria-invalid={Boolean(errors.email)}
-                    aria-describedby={errors.email ? 'email-error' : undefined}
-                    className={fieldClass(errors.email)}
-                  />
-                  {errors.email && (
-                    <p id="email-error" className="mt-2 text-xs text-rose-300">
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-2 block font-mono text-[0.68rem] tracking-[0.14em] uppercase text-white/45"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    value={form.message}
-                    onChange={update('message')}
-                    placeholder="Write your message here..."
-                    aria-invalid={Boolean(errors.message)}
-                    aria-describedby={errors.message ? 'message-error' : undefined}
-                    className={`${fieldClass(errors.message)} resize-none`}
-                  />
-                  {errors.message && (
-                    <p id="message-error" className="mt-2 text-xs text-rose-300">
-                      {errors.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <GlowButton as="button" type="submit" className="mt-7 w-full justify-center">
-                Send Message
-              </GlowButton>
-
-              <p
-                aria-live="polite"
-                className="mt-4 min-h-5 text-center text-xs text-white/45"
-              >
-                {sent
-                  ? 'Your email app will open with the message already filled in.'
-                  : 'This form opens your email app. No data is sent to any server.'}
-              </p>
-            </form>
-          </Reveal>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </Section>

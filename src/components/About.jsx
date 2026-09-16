@@ -4,7 +4,7 @@ import { Reveal, SectionHeading } from './ui';
 
 export default function About() {
   return (
-    <Section id="about">
+    <Section id="about" center={false}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="01"

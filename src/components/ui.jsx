@@ -25,10 +25,10 @@ export function SectionHeading({ index, eyebrow, title, subtitle, align = 'left'
             align === 'center' ? 'justify-center' : ''
           }`}
         >
-          <span className="label-mono text-nebula">
+          <span className="label-mono text-sm text-nebula sm:text-base">
             {index} — {eyebrow}
           </span>
-          <span className="h-px w-16 bg-gradient-to-r from-nebula/70 to-transparent" />
+          <span className="h-px w-20 bg-gradient-to-r from-nebula/70 to-transparent" />
         </div>
       </Reveal>
 
@@ -41,7 +41,7 @@ export function SectionHeading({ index, eyebrow, title, subtitle, align = 'left'
       {subtitle && (
         <Reveal delay={0.16}>
           <p
-            className={`mt-6 max-w-2xl text-base leading-8 text-white/60 ${
+            className={`mt-6 max-w-2xl text-lg leading-8 text-white/60 sm:text-xl ${
               align === 'center' ? 'mx-auto' : ''
             }`}
           >

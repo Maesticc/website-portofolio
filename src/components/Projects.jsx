@@ -5,6 +5,46 @@ import Section from './Section';
 import { DistantWorldsFX } from './SectionFX';
 import { Reveal, SectionHeading, Tag } from './ui';
 
+/* ---------- Thumbnail project ----------
+   Menampilkan gambar dari project.image. Jika file gambar belum ada atau
+   gagal dimuat, otomatis beralih ke placeholder bertema (inisial project di
+   atas gradien galaksi), jadi tidak pernah tampil ikon gambar rusak. */
+function ProjectThumb({ project, className = '' }) {
+  const [failed, setFailed] = useState(false);
+  const initials = project.title
+    .replace(/[^A-Za-z0-9 ]/g, '')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+
+  return (
+    <div
+      className={`relative overflow-hidden bg-[radial-gradient(120%_120%_at_20%_10%,rgba(124,92,255,0.28),transparent_55%),radial-gradient(120%_120%_at_90%_90%,rgba(110,231,255,0.16),transparent_55%),#0b0e18] ${className}`}
+    >
+      {project.image && !failed ? (
+        <img
+          src={project.image}
+          alt={`${project.title} preview`}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="h-full w-full object-cover object-top"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="font-display text-4xl font-light text-white/25">
+            {initials}
+          </span>
+        </div>
+      )}
+      {/* garis tepi halus supaya menyatu dengan kartu */}
+      <span className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/8" />
+    </div>
+  );
+}
+
 /* ---------- Modal detail project ---------- */
 function ProjectModal({ project, onClose }) {
   /* Tutup dengan Escape + kunci scroll body */
@@ -48,6 +88,11 @@ function ProjectModal({ project, onClose }) {
         >
           ✕
         </button>
+
+        <ProjectThumb
+          project={project}
+          className="mb-7 aspect-[16/9] w-full rounded-2xl"
+        />
 
         <p className="label-mono mb-4 text-nebula">Project Detail</p>
 
@@ -101,7 +146,7 @@ function ProjectCard({ project, onOpen }) {
       <button
         type="button"
         onClick={() => onOpen(project)}
-        className="block w-full cursor-pointer p-7 text-left sm:p-8"
+        className="block w-full cursor-pointer text-left"
       >
         {/* Sorotan warna saat hover */}
         <span
@@ -109,7 +154,13 @@ function ProjectCard({ project, onOpen }) {
           className="pointer-events-none absolute -top-24 -right-20 h-52 w-52 rounded-full bg-nebula/0 blur-[70px] transition-colors duration-500 group-hover:bg-nebula/25"
         />
 
-        <div className="relative flex items-start justify-between gap-6">
+        {/* Thumbnail di atas kartu */}
+        <ProjectThumb
+          project={project}
+          className="aspect-[16/9] w-full transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+
+        <div className="relative flex items-start justify-between gap-6 p-7 pb-3 sm:p-8 sm:pb-3">
           <div className="min-w-0">
             <p className="label-mono mb-3 text-white/35">
               {project.course} · {project.year}
@@ -127,11 +178,11 @@ function ProjectCard({ project, onOpen }) {
           </span>
         </div>
 
-        <p className="relative mt-4 text-sm leading-7 text-white/55">
+        <p className="relative mt-1 px-7 text-sm leading-7 text-white/55 sm:px-8">
           {project.summary}
         </p>
 
-        <div className="relative mt-6 flex flex-wrap gap-2">
+        <div className="relative mt-6 flex flex-wrap gap-2 px-7 pb-7 sm:px-8 sm:pb-8">
           {project.stack.map((tech) => (
             <Tag key={tech}>{tech}</Tag>
           ))}
@@ -155,7 +206,7 @@ export default function Projects() {
   );
 
   return (
-    <Section id="projects" atmosphere={<DistantWorldsFX />}>
+    <Section id="projects" center={false} atmosphere={<DistantWorldsFX />}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="03"

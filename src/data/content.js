@@ -8,8 +8,10 @@ import {
   SiGit,
   SiGithub,
   SiJavascript,
+  SiInstagram,
+  SiGmail,
 } from 'react-icons/si';
-import { FaJava } from 'react-icons/fa6';
+import { FaJava, FaLinkedin } from 'react-icons/fa6';
 
 /* -----------------------------------------------------------------------------
  * PROFILE  [EDIT]
@@ -71,10 +73,24 @@ export const navLinks = [
  * SOCIAL LINKS  [EDIT]
  * -------------------------------------------------------------------------- */
 export const socials = [
-  { label: 'GitHub', url: 'https://github.com/Maesticc' },
-  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/darren-vincent-a22549326/' },
-  { label: 'Instagram', url: 'https://www.instagram.com/darren.vincent_/' },
-  { label: 'Email', handle: 'darrenvincent547@gmail.com', url: 'mailto:darrenvincent547@gmail.com' },
+  {
+    label: 'GitHub',
+    handle: '@Maesticc',
+    url: 'https://github.com/Maesticc',
+    Icon: SiGithub,
+  },
+  {
+    label: 'LinkedIn',
+    handle: 'Darren Vincent',
+    url: 'https://www.linkedin.com/in/darren-vincent-a22549326/',
+    Icon: FaLinkedin,
+  },
+  {
+    label: 'Instagram',
+    handle: '@darren.vincent_',
+    url: 'https://www.instagram.com/darren.vincent_/',
+    Icon: SiInstagram,
+  },
 ];
 
 export const skills = [
@@ -244,6 +260,7 @@ export const projectCategories = [
 export const projects = [
 {
   id: 'coinride',
+  image: '/projects/coinride.jpeg',
   title: 'CoinRide',
   category: 'Software Engineering',
   course: 'Team Project',
@@ -256,6 +273,7 @@ export const projects = [
 },
 {
   id: 'smart-triage',
+  image: '/projects/smarttriage.jpeg',
   title: 'Smart Triage',
   category: 'AI / Machine Learning',
   course: 'AI Project',
@@ -268,6 +286,7 @@ export const projects = [
 },
 {
   id: 'rps-battle-arena',
+  image: '/projects/rps.jpeg',
   title: 'RPS Battle Arena',
   category: 'AI / Machine Learning',
   course: 'Personal Project',
@@ -275,15 +294,15 @@ export const projects = [
   summary: 'An adaptive Rock Paper Scissors game that learns from the player and predicts their next move.',
   detail: 'Built with Python, HTML, CSS, and JavaScript, the system uses a variable-order Markov model with additive smoothing to learn player move sequences and generate predictions. The interface also provides real-time confidence, accuracy, move distribution, and gameplay analytics.',
   stack: ['Python', 'JavaScript', 'HTML', 'CSS'],
-  highlight:
-    'Adaptive AI that learns from player behavior through sequence-based prediction.',
+  highlight: 'Adaptive AI that learns from player behavior through sequence-based prediction.',
   url: 'https://github.com/Maesticc/RPS-Arena',
 },
 {
   id: 'symptom-disease-classification',
+  image: '/projects/machinelearning.jpeg',
   title: 'Symptom to Disease Classification',
-  category: 'AI / Machine Learning',
-  course: 'Team Project',
+  category: 'Team Project',
+  course: 'AI / Machine Learning',
   year: '2026',
   summary:'A machine learning system that classifies diseases from textual symptom descriptions using multiple classification algorithms.',
   detail:'Built a multi-class text classification pipeline that preprocesses symptom descriptions using tokenization, stopword removal, POS tagging, and lemmatization. TF-IDF was then used to extract text features before comparing Random Forest, Logistic Regression, Decision Tree, and Multinomial Naive Bayes classifiers.',
@@ -293,6 +312,7 @@ export const projects = [
 },
 {
   id: 'symptom-disease-classifier',
+  image: '/projects/nlp.jpeg',
   title: 'Symptom to Disease Classifier',
   category: 'Team Project',
   course: 'AI / Machine Learningt',
@@ -305,6 +325,7 @@ export const projects = [
 },
 {
   id: 'medical-rag-evaluation',
+  image: '/projects/llm.png',
   title: 'Local LLM Medical RAG Evaluation System',
   category: 'LLM / RAG',
   course: 'Research Project',
@@ -317,6 +338,7 @@ export const projects = [
 },
 {
   id: 'bukacv',
+  image: '/projects/bukacv.png',
   title: 'BukaCV Document Scanner',
   category: 'Computer Vision',
   course: 'Team Project',
@@ -340,10 +362,8 @@ export const experiences = [
   role: 'Co-Founder',
   period: 'March 2025 - Present',
   location: 'Jakarta, Indonesia',
-
   description:
     'Co-founded and managed an event organizer focused on exhibitions and community events, overseeing business development, partnerships, event planning, marketing, and on-site operations.',
-
   skills: [
     'Business Development',
     'Event Management',
@@ -395,7 +415,6 @@ export const experiences = [
     },
   ],
 },
-
   {
     id: 'exp-2',
     org: 'PT Dos Pictures Creative',

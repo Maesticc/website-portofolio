@@ -26,15 +26,16 @@ export default function Section({
   className = '',
   center = true,
   atmosphere = null,
+  fullHeight = true,
 }) {
   const { base, previous } = getSurface(id);
 
   return (
     <section
       id={id}
-      className={`relative flex min-h-[100dvh] flex-col px-6 py-24 lg:px-10 lg:py-28 ${
-        center ? 'justify-center' : 'justify-start'
-      } ${className}`}
+      className={`relative flex flex-col px-6 py-24 lg:px-10 lg:py-28 ${
+        fullHeight ? 'min-h-[100dvh]' : ''
+      } ${center ? 'justify-center' : 'justify-start'} ${className}`}
     >
       {/* Tint hue tipis. Gradien memulai dari tint section sebelumnya, jadi
           perpindahan warna menyatu tanpa garis potong. Karena alpha kecil,

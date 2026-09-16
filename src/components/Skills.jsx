@@ -345,12 +345,12 @@ export default function Skills() {
   }, [inView, keyMap, activate, step]);
 
   return (
-    <Section id="skills" atmosphere={<ConstellationFX />}>
+    <Section id="skills" center={false} atmosphere={<ConstellationFX />}>
       <div ref={sectionRef} className="mx-auto max-w-7xl">
         {/* ---------- Header ---------- */}
         <div className="mb-4 flex items-center gap-4">
-          <span className="label-mono text-nebula">02 — Skills</span>
-          <span className="h-px w-16 bg-gradient-to-r from-nebula/70 to-transparent" />
+          <span className="label-mono text-sm text-nebula sm:text-base">02 — Skills</span>
+          <span className="h-px w-20 bg-gradient-to-r from-nebula/70 to-transparent" />
         </div>
 
         <Reveal>
@@ -360,7 +360,7 @@ export default function Skills() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-white/60">
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60 sm:text-xl">
             Each keycap is one technology I use.{' '}
             {isTouch
               ? 'Tap a keycap'
