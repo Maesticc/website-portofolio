@@ -166,6 +166,27 @@ export default function StarField() {
     let nextMeteorAt = 0;
     let meteors = [];
 
+    /* Sprite pijar bintang, dibuat SEKALI lalu ditempel ulang dengan drawImage.
+       Ini kunci kelancaran: dulu tiap bintang berkelip membuat radial gradient
+       baru di setiap frame (puluhan alokasi per frame), yang mahal dan bersaing
+       dengan compositing scroll. Sekarang gradiennya dibuat sekali di sprite
+       putih, lalu tinggal digambar dengan warna via globalAlpha. */
+    const GLOW = 64;
+    if (!glowSprite.current) {
+      const gc = document.createElement('canvas');
+      gc.width = GLOW;
+      gc.height = GLOW;
+      const gg = gc.getContext('2d');
+      const gr = GLOW / 2;
+      const grad = gg.createRadialGradient(gr, gr, 0, gr, gr, gr);
+      grad.addColorStop(0, 'rgba(255,255,255,1)');
+      grad.addColorStop(0.32, 'rgba(255,255,255,0.5)');
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      gg.fillStyle = grad;
+      gg.fillRect(0, 0, GLOW, GLOW);
+      glowSprite.current = gc;
+    }
+
     /* =====================================================================
      * MENGGAMBAR LANGIT STATIS
      * ================================================================== */
@@ -449,29 +470,31 @@ export default function StarField() {
       lctx.clearRect(0, 0, w, h);
 
       const t = time / 1000;
+      const sprite = glowSprite.current;
       for (const s of twinklers.current) {
         const k = 0.62 + 0.38 * Math.sin(t * s.speed + s.phase);
         const a = s.alpha * k;
-        lctx.fillStyle = `rgba(${s.tint},${a.toFixed(3)})`;
+
+        /* Halo lembut: sprite pijar yang sudah jadi, cukup ditempel. Ukurannya
+           mengikuti radius bintang. Tidak ada pembuatan gradient per frame. */
+        const haloSize = s.radius * 12;
+        lctx.globalAlpha = Math.min(1, a * 0.5);
+        lctx.drawImage(
+          sprite,
+          s.x - haloSize / 2,
+          s.y - haloSize / 2,
+          haloSize,
+          haloSize,
+        );
+
+        /* Inti bintang: titik solid kecil. */
+        lctx.globalAlpha = Math.min(1, a);
+        lctx.fillStyle = `rgb(${s.tint})`;
         lctx.beginPath();
         lctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
         lctx.fill();
-
-        const halo = lctx.createRadialGradient(
-          s.x,
-          s.y,
-          0,
-          s.x,
-          s.y,
-          s.radius * 6,
-        );
-        halo.addColorStop(0, `rgba(${s.tint},${(a * 0.22).toFixed(3)})`);
-        halo.addColorStop(1, `rgba(${s.tint},0)`);
-        lctx.fillStyle = halo;
-        lctx.beginPath();
-        lctx.arc(s.x, s.y, s.radius * 6, 0, Math.PI * 2);
-        lctx.fill();
       }
+      lctx.globalAlpha = 1;
 
       for (let i = meteors.length - 1; i >= 0; i -= 1) {
         const m = meteors[i];
@@ -501,8 +524,10 @@ export default function StarField() {
       }
     }
 
-    /* ---------- loop, dibatasi 30 frame per detik ---------- */
-    const FRAME_MS = 1000 / 30;
+    /* ---------- loop, dibatasi 24 frame per detik ----------
+       Kelipan bintang itu lambat dan halus, jadi 24fps tak terbedakan dari 30,
+       tapi menyisakan lebih banyak waktu CPU untuk kelancaran scroll. */
+    const FRAME_MS = 1000 / 24;
 
     function loop(time) {
       if (!running) return;
