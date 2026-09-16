@@ -8,7 +8,7 @@ export default function About() {
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           index="01"
-          eyebrow="About"
+          eyebrow="About Me"
           title={
             <>
               Di balik antarmuka,
@@ -35,19 +35,15 @@ export default function About() {
               </div>
 
               <div className="glass-panel relative aspect-square overflow-hidden rounded-full">
-                {/* Ganti bagian ini dengan <img src="..." /> foto kamu  [EDIT] */}
-                <div className="absolute inset-0 bg-[radial-gradient(80%_80%_at_30%_25%,rgba(124,92,255,0.42),transparent_65%),radial-gradient(70%_70%_at_75%_80%,rgba(232,121,249,0.32),transparent_60%)]" />
-                <div className="relative flex h-full flex-col items-center justify-center gap-3 text-center">
-                  <span className="font-display text-6xl font-light text-white/85">
-                    {profile.name
-                      .split(' ')
-                      .map((w) => w[0])
-                      .join('')}
-                  </span>
-                  <span className="label-mono text-white/35">
-                    Foto kamu di sini
-                  </span>
-                </div>
+                {/* Foto profil. Taruh file di public/profile.jpg
+                    object-cover memotong foto agar mengisi lingkaran penuh,
+                    object-top menjaga wajah tetap di bagian atas potongan. */}
+                <img
+                  src="/profile.jpg"
+                  alt={profile.name}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover object-top"
+                />
               </div>
             </div>
           </Reveal>
