@@ -19,10 +19,8 @@ export default function About() {
         />
 
         <div className="mt-16 grid items-start gap-14 lg:grid-cols-[0.85fr_1.15fr]">
-          {/* ---------- Portrait / visual ---------- */}
           <Reveal>
             <div className="relative mx-auto w-full max-w-sm">
-              {/* Cincin orbit di sekitar foto */}
               <div
                 aria-hidden="true"
                 className="absolute -inset-6 rounded-full border border-white/[0.07]"
@@ -35,9 +33,6 @@ export default function About() {
               </div>
 
               <div className="glass-panel relative aspect-square overflow-hidden rounded-full">
-                {/* Foto profil. Taruh file di public/profile.jpg
-                    object-cover memotong foto agar mengisi lingkaran penuh,
-                    object-top menjaga wajah tetap di bagian atas potongan. */}
                 <img
                   src="/profile.jpg"
                   alt={profile.name}
@@ -48,7 +43,6 @@ export default function About() {
             </div>
           </Reveal>
 
-          {/* ---------- Bio ---------- */}
           <div>
             <Reveal delay={0.08}>
               <h3 className="mb-8 font-display text-3xl leading-tight font-light text-white sm:text-4xl">
@@ -65,7 +59,6 @@ export default function About() {
               ))}
             </div>
 
-            {/* Statistik singkat */}
             <Reveal delay={0.34}>
               <dl className="mt-12 grid grid-cols-3 gap-4 border-t border-white/8 pt-8">
                 {profile.stats.map((stat) => (
@@ -86,7 +79,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* ---------- Fokus ---------- */}
         <div className="mt-20">
           <Reveal>
             <p className="label-mono mb-6 text-white/35">Current focus</p>

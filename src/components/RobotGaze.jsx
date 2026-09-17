@@ -1,20 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 
-/**
- * RobotGaze
- * Sistem arah pandang terpusat untuk maskot robot.
- *
- * Ada tiga sumber perhatian, dengan urutan prioritas:
- *   1. Attractor  : elemen tertentu yang sedang disorot pengguna, misalnya
- *                   tautan navigasi. Robot menoleh ke arah elemen itu.
- *   2. Kursor     : posisi kursor terakhir.
- *   3. Diam       : bila kursor tidak bergerak beberapa saat, robot beralih
- *                   ke perilaku diam, yaitu memandang sekeliling perlahan.
- *
- * Seluruh nilai disimpan dalam ref, bukan state, sehingga tidak ada satu pun
- * render ulang React saat kursor bergerak. Hanya ada SATU listener pointer
- * untuk seluruh halaman, bukan satu per komponen.
- */
 const GazeContext = createContext(null);
 
 export function RobotGazeProvider({ children }) {
@@ -66,7 +51,6 @@ export function RobotGazeProvider({ children }) {
       lastPointerAt,
       attractorEpoch,
 
-      /** Minta robot menoleh ke arah sebuah elemen. */
       lookAt(el) {
         if (!el) return;
         const r = el.getBoundingClientRect();
@@ -77,7 +61,6 @@ export function RobotGazeProvider({ children }) {
         attractorEpoch.current += 1;
       },
 
-      /** Lepaskan perhatian, robot kembali mengikuti kursor. */
       stopLooking() {
         if (!attractor.current) return;
         attractor.current = null;
@@ -94,14 +77,6 @@ export function useRobotGaze() {
   return useContext(GazeContext);
 }
 
-/**
- * useGazeAttractor
- * Mengembalikan sekumpulan handler untuk ditempelkan pada elemen apa pun yang
- * boleh menarik perhatian robot, misalnya tautan navigasi.
- *
- * Menyertakan onFocus dan onBlur, sehingga pengguna keyboard mendapat reaksi
- * yang sama dengan pengguna mouse.
- */
 export function useGazeAttractor() {
   const gaze = useRobotGaze();
 

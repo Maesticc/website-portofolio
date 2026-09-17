@@ -3,12 +3,6 @@ import Section from './Section';
 import { SignalFX } from './SectionFX';
 import { Reveal, SectionHeading } from './ui';
 
-/**
- * Contact
- * Section penutup. Disederhanakan menjadi hanya kanal kontak: setiap kanal
- * tampil sebagai kartu dengan logo/ikon di kirinya, nama kanal, dan handle.
- * Tidak ada form; tiap kartu langsung menuju profil atau membuka email.
- */
 export default function Contact() {
   return (
     <Section id="contact" center={false} fullHeight={false} atmosphere={<SignalFX />}>

@@ -8,24 +8,10 @@ import {
 import { navLinks } from '../data/content';
 import { handleNavClick } from '../lib/smoothScroll';
 
-/* Item yang tampil di pill nav (section home tidak perlu tombol) */
 const ITEMS = navLinks.filter((l) => l.id !== 'home');
 
-/* Berapa lama harus diam sebelum pill muncul */
 const IDLE_DELAY = 650;
 
-/**
- * FloatingNav
- * Pill navigasi yang mengapung di tengah bawah layar dengan aturan:
- *  - Tidak pernah tampil selama pengunjung masih di section home.
- *  - Setelah lewat home, pill muncul ketika pengunjung BERHENTI scroll.
- *  - Pill langsung sembunyi lagi begitu pengunjung melanjutkan scroll.
- *  - Ikut muncul saat menerima fokus keyboard, supaya tetap bisa diakses
- *    tanpa mouse.
- *
- * Deteksi scroll memakai useScroll() dari Motion, bukan
- * window.addEventListener('scroll'), agar tidak memicu reflow terus-menerus.
- */
 export default function FloatingNav() {
   const { scrollY } = useScroll();
 
@@ -36,7 +22,6 @@ export default function FloatingNav() {
   const idleTimer = useRef(null);
   const focused = useRef(false);
 
-  /* Menyalakan pill setelah diam beberapa saat */
   const scheduleReveal = () => {
     clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(() => {
@@ -44,7 +29,6 @@ export default function FloatingNav() {
     }, IDLE_DELAY);
   };
 
-  /* ---- apakah pengunjung sudah melewati section home ---- */
   useEffect(() => {
     const hero = document.getElementById('home');
     if (!hero) return;
@@ -69,7 +53,6 @@ export default function FloatingNav() {
     return () => observer.disconnect();
   }, []);
 
-  /* ---- sembunyikan saat scroll, tampilkan saat diam ---- */
   useMotionValueEvent(scrollY, 'change', () => {
     if (!focused.current) setVisible(false);
     scheduleReveal();
@@ -77,7 +60,6 @@ export default function FloatingNav() {
 
   useEffect(() => () => clearTimeout(idleTimer.current), []);
 
-  /* ---- menandai section yang sedang dilihat ---- */
   useEffect(() => {
     const sections = ITEMS.map((l) => document.getElementById(l.id)).filter(
       Boolean,

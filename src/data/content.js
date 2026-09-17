@@ -18,17 +18,9 @@ import { FaJava, FaLinkedin } from 'react-icons/fa6';
  * -------------------------------------------------------------------------- */
 export const profile = {
   name: 'Darren Vincent',
-  firstName: 'Darren',
-  role: 'Computer Science Student',
-  tagline: 'Exploring code like exploring a galaxy.',
   /* Hero: small intro, name, then the main statement (split per line). */
   heroIntro: 'Hello, I am',
   heroStatement: ['Building interfaces', 'that feel', 'like outer space.'],
-  heroHeadline: 'Building interfaces that feel\nlike outer space.',
-  location: 'Jakarta, Indonesia',
-  email: 'darrenvincent547@gmail.com',
-  availableFor:
-    'Frontend projects, portfolio websites, and collaborations around web development, AI, and digital product design.',
   /* Robot mascot quote, shown beside the robot on hover or tap. */
   robotQuote: 'Every idea is a world waiting to be explored.',
   aboutParagraphs: [
@@ -101,14 +93,12 @@ export const skills = [
     key: 'J',
     row: 0,
     category: 'Web',
-    level: 80,
     Icon: SiJavascript,
     cap: '#f7df1e',
     ink: '#111111',
     tagline: 'Bringing the web to life',
     what: 'A programming language used to build interactive and dynamic web experiences.',
     usedFor: "I use it to build interactive interfaces and handle dynamic web functionality.",
-    tags: ['ES6+', 'DOM', 'Async/Await'],
   },
   {
     id: 'php',
@@ -116,14 +106,12 @@ export const skills = [
     key: 'P',
     row: 0,
     category: 'Web',
-    level: 80,
     Icon: SiLaravel,
     cap: '#f05340',
     ink: '#ffffff',
     tagline: 'Building powerful web backends',
     what: 'A backend technology used to build dynamic web applications and APIs.',
     usedFor: 'I use Laravel to build backend systems, manage databases, and develop API endpoints.',
-    tags: ['Laravel', 'MVC',],
   },
   {
     id: 'java',
@@ -131,14 +119,12 @@ export const skills = [
     key: 'A',
     row: 0,
     category: 'Language',
-    level: 80,
     Icon: FaJava,
     cap: '#c74634',
     ink: '#ffffff',
     tagline: 'Building with object-oriented principles',
     what: 'An object-oriented language that runs on the JVM. A strong foundation for learning OOP: classes, inheritance, and encapsulation.',
     usedFor: 'My main language for Object-Oriented Programming coursework, applying OOP principles to structured, reusable code.',
-    tags: ['OOP', 'JVM', 'Inheritance'],
   },
 
  //  Row 2: AI with Python
@@ -149,14 +135,12 @@ export const skills = [
   key: 'M',
   row: 1,
   category: 'AI / ML',
-  level: 80,
   Icon: SiScikitlearn,
   cap: '#f7931e',
   ink: '#111111',
   tagline: 'Teaching computer to learn from data',
   what: 'A field of AI focused on building models that learn patterns from data and make predictions.',
   usedFor:'I use it to explore classification, prediction, and data-driven problem solving with Python.',
-  tags: ['Python', 'Scikit-learn', 'Training'],
 },
 
 {
@@ -165,14 +149,12 @@ export const skills = [
   key: 'N',
   row: 1,
   category: 'AI / ML',
-  level: 80,
   Icon: SiPython,
   cap: '#3776ab',
   ink: '#ffffff',
   tagline: 'Teaching computer to understand language',
   what: 'A field of AI focused on processing and understanding human language using computational methods.',
   usedFor: 'I use Python to work with text data and explore language-based machine learning solutions.',
-  tags: ['Python', 'Text Data', 'NLP'],
 },
 
 {
@@ -181,14 +163,12 @@ export const skills = [
   key: 'V',
   row: 1,
   category: 'AI / ML',
-  level: 80,
   Icon: SiOpencv,
   cap: '#5c3ee8',
   ink: '#ffffff',
   tagline: 'Teaching computer to see',
   what: 'A field of AI focused on enabling computers to process and understand visual information.',
   usedFor: 'I use Python to explore image processing and computer vision-based solutions.',
-  tags: ['Python', 'OpenCV', 'Image Processing'],
 },
   // Row 3 : Data, design & workflow 
   {
@@ -197,14 +177,12 @@ export const skills = [
     key: 'S',
     row: 2,
     category: 'Data',
-    level: 80,
     Icon: SiMysql,
     cap: '#00758f',
     ink: '#ffffff',
     tagline: 'Working with structured data',
     what: 'A language used to manage, query, and organize relational databases.',
     usedFor:'I use SQL to design databases, manage data, and work with relational structures.',
-    tags: ['Database', 'Queries', 'Relationships'],
   },
   {
     id: 'figma',
@@ -212,14 +190,12 @@ export const skills = [
     key: 'F',
     row: 2,
     category: 'Design',
-    level: 80,
     Icon: SiFigma,
     cap: '#a259ff',
     ink: '#ffffff',
     tagline: 'Designing before building',
     what: 'A collaborative design tool for creating interfaces and interactive prototypes.',
     usedFor: 'I use it to make prototype interfaces and explore product ideas before development.',
-    tags: ['Prototyping', 'UI/UX Design', 'Wireframe'],
   },
   {
     id: 'git',
@@ -227,14 +203,12 @@ export const skills = [
     key: 'G',
     row: 2,
     category: 'Tooling',
-    level: 80,
     Icon: SiGithub,
     cap: '#1f2328',
     ink: '#ffffff',
     tagline: 'Managing code and collaboration',
     what: 'Version control tools used to manage source code and collaborate on projects.',
     usedFor: 'I use them to manage projects, track changes, and collaborate with teams.',
-    tags: ['Branching', 'Pull Request', 'Version Control'],
   },
 ];
 
@@ -268,7 +242,6 @@ export const projects = [
   summary: 'An AI-powered personal finance tracker designed to make transaction management and financial tracking more intuitive.',
   detail: 'Developed the backend using Supabase, including authentication, PostgreSQL database design, transaction storage, and user access management. Integrated the Next.js application with Supabase and connected the platform with a Hugging Face AI model for automatic transaction classification.',
   stack: ['Next.js', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'Hugging Face'],
-  highlight:'Backend development, database architecture, authentication, and AI integration.',
   url: 'https://coinride.vercel.app/',
 },
 {
@@ -281,7 +254,6 @@ export const projects = [
   summary : 'An AI-powered healthcare system designed to support emergency triage and hospital allocation.',
   detail: 'Developed an NLP-based triage system using a fine-tuned Hugging Face Transformer model to classify patient symptoms into risk levels and recommend healthcare facilities based on risk and available capacity. The application also includes hospital dispatch simulation, interactive maps, and capacity monitoring.',
   stack: ['Python','Streamlit', 'Hugging Face Transformers','PyTorch', 'Folium'],
-  highlight: 'NLP-based risk classification with automated hospital recommendation and dispatch simulation.',
   url: 'https://optimization-healthcare-ai-vfgn3u28mpecacpxfii9dy.streamlit.app/',
 },
 {
@@ -294,7 +266,6 @@ export const projects = [
   summary: 'An adaptive Rock Paper Scissors game that learns from the player and predicts their next move.',
   detail: 'Built with Python, HTML, CSS, and JavaScript, the system uses a variable-order Markov model with additive smoothing to learn player move sequences and generate predictions. The interface also provides real-time confidence, accuracy, move distribution, and gameplay analytics.',
   stack: ['Python', 'JavaScript', 'HTML', 'CSS'],
-  highlight: 'Adaptive AI that learns from player behavior through sequence-based prediction.',
   url: 'https://github.com/Maesticc/RPS-Arena',
 },
 {
@@ -302,26 +273,24 @@ export const projects = [
   image: '/projects/machine.jpeg',
   fit: 'contain',
   title: 'Symptom to Disease Classification',
-  category: 'Team Project',
-  course: 'AI / Machine Learning',
+  category: 'AI / Machine Learning',
+  course: 'Team Project',
   year: '2026',
   summary:'A machine learning system that classifies diseases from textual symptom descriptions using multiple classification algorithms.',
   detail:'Built a multi-class text classification pipeline that preprocesses symptom descriptions using tokenization, stopword removal, POS tagging, and lemmatization. TF-IDF was then used to extract text features before comparing Random Forest, Logistic Regression, Decision Tree, and Multinomial Naive Bayes classifiers.',
   stack: ['Python','NLP','NLTK','Scikit-learn','TF-IDF','Machine Learning'],
-  highlight: 'Comparative evaluation of four machine learning classifiers for symptom-based disease prediction.',
   url: 'https://ml-finalproject-group-7-lf01.streamlit.app/',
 },
 {
   id: 'symptom-disease-classifier',
   image: '/projects/nlp.jpeg',
   title: 'Symptom to Disease Classifier',
-  category: 'Team Project',
-  course: 'AI / Machine Learningt',
+  category: 'AI / Machine Learning',
+  course: 'Team Project',
   year: '2026',
   summary: 'A Streamlit-based machine learning application that predicts diseases from symptom descriptions using a Naive Bayes classifier.',
   detail: 'Built an interactive NLP application that preprocesses symptom descriptions using tokenization, stopword removal, and lemmatization before using a Naive Bayes classifier to predict disease categories. The application provides prediction results and confidence scores through a Streamlit web interface.',
   stack: ['Python', 'Streamlit', 'NLP', 'NLTK', 'Naive Bayes', 'Machine Learning'],
-  highlight: 'Interactive symptom-to-disease prediction powered by NLP preprocessing and Naive Bayes classification.',
   url: 'https://nlp-final-project-group-23-lc01.streamlit.app/'
 },
 {
@@ -334,7 +303,6 @@ export const projects = [
   summary:'A research system that evaluates Retrieval-Augmented Generation against non-RAG approaches for medical question answering using local LLMs.',
   detail:'Built an evaluation pipeline comparing RAG and No-RAG approaches using local Gemma models and Indonesian pharmaceutical data. The RAG pipeline combines dense semantic retrieval, BM25 keyword search, ensemble retrieval, and cross-encoder reranking before generating answers. Both approaches are evaluated using RAGAS-based metrics including answer correctness, answer relevancy, faithfulness, context precision, and context recall.',
   stack: ['Python','RAG','LLM','Gemma','Ollama','ChromaDB','BAAI BGE-M3','BM25','RAGAS'],
-  highlight: 'Experimental comparison of RAG and No-RAG medical question answering using local LLMs and retrieval evaluation metrics.',
   url: 'https://github.com/Maesticc/crosslingual-medical-rag',
 },
 {
@@ -347,7 +315,6 @@ export const projects = [
   summary:'A document scanning application that uses computer vision to detect, transform, and enhance documents from images.',
   detail:'Built a Flask backend that provides image processing APIs for grayscale conversion, contour detection, perspective transformation, image enhancement, and PDF export. The scanning pipeline detects document boundaries using contour analysis and applies perspective transformation to produce a scanned document. The frontend is built with Flutter to provide the user interface for interacting with the scanning features.',
   stack: ['Python','Flask','OpenCV','Flutter','Computer Vision'],
-  highlight:'Computer vision-based document scanning with contour detection, perspective transformation, image enhancement, and PDF export.',
   url: 'https://github.com/Maesticc/bukacv',
 }
 ];

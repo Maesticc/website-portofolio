@@ -1,40 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-/**
- * StarField
- * Langit malam bergaya astrofotografi, dibangun secara prosedural.
- *
- * Yang membuat langit terasa nyata bukan jumlah bintangnya, melainkan
- * VARIASI KEPADATANNYA. Di sini kepadatan bintang ditentukan sebuah fungsi
- * yang meniru struktur Bima Sakti:
- *
- *   1. Ada pita galaksi yang membentang diagonal, terbit dari cakrawala kiri
- *      bawah menuju kanan atas. Kepadatan bintang meluruh menjauhi pita.
- *   2. Sepanjang pita ada dua gumpalan terang, di dekat cakrawala dan di
- *      kanan atas, dengan bagian tengah yang jauh lebih redup.
- *   3. Ada jalur debu gelap yang membelah pita di bagian tengah. Ini ciri
- *      paling khas foto Bima Sakti sungguhan, dan sekaligus alasan area di
- *      belakang judul tetap gelap sehingga teks tetap terbaca.
- *   4. Ada beberapa gugus bintang yang membuat sebarannya menggerombol,
- *      bukan tersebar rata.
- *   5. Mendekati cakrawala, kabut atmosfer memudarkan bintang.
- *
- * Kinerja. Ini pelajaran dari keluhan sebelumnya bahwa halaman terasa berat:
- *   - Langit digambar SEKALI ke kanvas statis. Nebulositas dan ribuan bintang
- *     redup tidak pernah digambar ulang.
- *   - Kanvas kedua yang tipis hanya berisi sekitar 40 bintang berkelip dan
- *     meteor yang jarang. Hanya kanvas inilah yang menggambar per frame, dan
- *     dibatasi 30 frame per detik.
- *   - Nebula memakai sprite yang dibuat sekali, lalu ditempel ulang dengan
- *     drawImage. Membuat radial gradient ratusan kali jauh lebih mahal.
- *   - Loop berhenti total saat tab tidak aktif.
- *   - prefers-reduced-motion mematikan seluruh gerak; langit statis tetap utuh.
- *
- * Sebaran bintang memakai generator acak berbenih, sehingga langit selalu
- * sama pada setiap render dan tidak berkedip saat komponen dirender ulang.
- */
-
-/* ---------- generator acak berbenih ---------- */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function next() {
@@ -47,7 +12,6 @@ function mulberry32(seed) {
 
 const SKY_SEED = 20260915;
 
-/* ---------- geometri pita galaksi ---------- */
 function makeBand(w, h) {
   const A = { x: -0.2 * w, y: 1.24 * h };
   const B = { x: 1.2 * w, y: -0.24 * h };
@@ -82,13 +46,10 @@ function bandCoords(band, x, y) {
 
 const gauss = (v, c, s) => Math.exp(-(((v - c) / s) ** 2));
 
-/* Profil kecerahan sepanjang pita: terang di dekat cakrawala, redup di
- * tengah, terang lagi di kanan atas. */
 function bandProfile(t) {
   return 0.18 + 1.05 * gauss(t, 0.19, 0.145) + 0.88 * gauss(t, 0.82, 0.17);
 }
 
-/* ---------- sprite nebula, dibuat sekali lalu dipakai ulang ---------- */
 const NEBULA_TINTS = [
   '150, 172, 210', // biru pucat, tulang punggung pita
   '104, 122, 176', // biru
@@ -117,7 +78,6 @@ function makePuffSprite(tint, size) {
   return c;
 }
 
-/* ---------- warna bintang, mengikuti kelas spektrum, sengaja diredam ---------- */
 const STAR_TINTS = [
   { c: '228, 234, 246', w: 0.52 }, // putih kebiruan
   { c: '198, 216, 246', w: 0.16 }, // biru pucat
@@ -166,11 +126,6 @@ export default function StarField() {
     let nextMeteorAt = 0;
     let meteors = [];
 
-    /* Sprite pijar bintang, dibuat SEKALI lalu ditempel ulang dengan drawImage.
-       Ini kunci kelancaran: dulu tiap bintang berkelip membuat radial gradient
-       baru di setiap frame (puluhan alokasi per frame), yang mahal dan bersaing
-       dengan compositing scroll. Sekarang gradiennya dibuat sekali di sprite
-       putih, lalu tinggal digambar dengan warna via globalAlpha. */
     const GLOW = 64;
     if (!glowSprite.current) {
       const gc = document.createElement('canvas');
@@ -187,9 +142,6 @@ export default function StarField() {
       glowSprite.current = gc;
     }
 
-    /* =====================================================================
-     * MENGGAMBAR LANGIT STATIS
-     * ================================================================== */
     function paintSky() {
       const rnd = mulberry32(SKY_SEED);
       const band = makeBand(w, h);
@@ -198,7 +150,6 @@ export default function StarField() {
       sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       sctx.clearRect(0, 0, w, h);
 
-      /* ---- 1. Dasar langit: biru dongker yang menggelap ke atas ---- */
       const base = sctx.createLinearGradient(0, 0, w * 0.25, h);
       base.addColorStop(0, '#05060f');
       base.addColorStop(0.45, '#070914');
@@ -207,7 +158,6 @@ export default function StarField() {
       sctx.fillStyle = base;
       sctx.fillRect(0, 0, w, h);
 
-      /* Sedikit ungu tua di kuadran kanan atas, arah pusat galaksi */
       const violet = sctx.createRadialGradient(
         w * 0.82,
         h * 0.1,
@@ -222,7 +172,6 @@ export default function StarField() {
       sctx.fillStyle = violet;
       sctx.fillRect(0, 0, w, h);
 
-      /* ---- 2. Gumpalan awan bintang sepanjang pita ---- */
       const sprites = NEBULA_TINTS.map((t) => makePuffSprite(t, 192));
       const dustSprite = makePuffSprite(DUST_TINT, 192);
 
@@ -233,13 +182,10 @@ export default function StarField() {
       for (let i = 0; i < puffCount; i += 1) {
         const t = rnd();
         const profile = bandProfile(t);
-        /* Gumpalan mengikuti sebaran normal di sekitar sumbu pita */
         const u = (rnd() + rnd() + rnd() - 1.5) * spread * 1.25;
         const p = bandPoint(band, t, u);
         if (p.x < -260 || p.x > w + 260 || p.y < -260 || p.y > h + 260) continue;
 
-        /* Warna dipilih menurut posisi: inti hangat di tengah pita, biru dan
-           ungu di pinggirnya, merah jambu berdebu mendekati cakrawala. */
         const edge = Math.abs(u) / (spread * 1.6);
         let idx;
         if (p.y > h * 0.72 && rnd() < 0.55) idx = rnd() < 0.5 ? 4 : 5;
@@ -257,10 +203,6 @@ export default function StarField() {
       sctx.globalCompositeOperation = 'source-over';
       sctx.globalAlpha = 1;
 
-      /* ---- 3. Jalur debu gelap yang membelah pita ----
-         Digambar setelah awan, memakai warna dasar langit, sehingga benar
-         benar mengurangi cahaya seperti debu yang menghalangi. Letaknya di
-         bagian tengah pita, tepat di belakang judul. */
       const dustCount = Math.round(Math.min(90, Math.max(36, area / 17000)));
       for (let i = 0; i < dustCount; i += 1) {
         const t = 0.3 + rnd() * 0.42;
@@ -270,7 +212,6 @@ export default function StarField() {
         sctx.globalAlpha = 0.16 + rnd() * 0.2;
         sctx.drawImage(dustSprite, p.x - size / 2, p.y - size / 2, size, size);
       }
-      /* Beberapa jalur debu tipis di gumpalan kanan atas */
       for (let i = 0; i < Math.round(dustCount * 0.4); i += 1) {
         const t = 0.72 + rnd() * 0.2;
         const u = 0.03 * h + (rnd() + rnd() - 1) * 0.05 * h;
@@ -281,7 +222,6 @@ export default function StarField() {
       }
       sctx.globalAlpha = 1;
 
-      /* ---- 4. Gugus bintang, supaya sebarannya menggerombol ---- */
       const clusters = [];
       for (let i = 0; i < 6; i += 1) {
         const t = rnd();
@@ -295,7 +235,6 @@ export default function StarField() {
         });
       }
 
-      /* ---- 5. Fungsi kepadatan bintang ---- */
       const textCx = w * 0.5;
       const textCy = h * 0.45;
 
@@ -303,14 +242,12 @@ export default function StarField() {
         const { t, u } = bandCoords(band, x, y);
         const bandTerm = Math.exp(-((u / spread) ** 2)) * bandProfile(t);
 
-        /* jalur debu juga mengurangi jumlah bintang yang terlihat */
         const rift =
           1 -
           0.74 *
             gauss(u, -0.04 * h, 0.05 * h) *
             gauss(t, 0.5, 0.19);
 
-        /* area di belakang judul dijaga tetap lengang */
         const text =
           1 -
           0.5 *
@@ -321,7 +258,6 @@ export default function StarField() {
               ),
             );
 
-        /* kabut dekat cakrawala memudarkan bintang */
         const horizon =
           y > h * 0.7 ? Math.max(0.12, 1 - (y - h * 0.7) / (h * 0.3)) : 1;
 
@@ -333,7 +269,6 @@ export default function StarField() {
         return Math.max(0, (0.12 + 1.05 * bandTerm) * clump * rift * text * horizon);
       }
 
-      /* ---- 6. Bintang, disebar dengan penolakan sampel ---- */
       const target = Math.round(Math.min(1600, Math.max(320, area / 1150)));
       const maxDensity = 3.4;
       const twinkleList = [];
@@ -348,15 +283,11 @@ export default function StarField() {
 
         placed += 1;
 
-        /* Kecerahan mengikuti hukum pangkat: sangat banyak yang redup, hanya
-           sedikit yang benar benar terang. */
         const mag = Math.pow(rnd(), 3.1);
         const radius = 0.34 + mag * 1.75;
         const alpha = 0.16 + mag * 0.74;
         const tint = pickTint(rnd);
 
-        /* Sekitar tiga persen bintang paling terang dipindahkan ke lapisan
-           berkelip. Sisanya tetap di lapisan statis. */
         if (mag > 0.74 && twinkleList.length < 44) {
           twinkleList.push({
             x,
@@ -375,7 +306,6 @@ export default function StarField() {
         sctx.arc(x, y, radius, 0, Math.PI * 2);
         sctx.fill();
 
-        /* Bintang terang mendapat halo lembut, bukan cahaya neon */
         if (mag > 0.5) {
           const halo = sctx.createRadialGradient(x, y, 0, x, y, radius * 5.5);
           halo.addColorStop(0, `rgba(${tint},${(alpha * 0.2).toFixed(3)})`);
@@ -388,9 +318,6 @@ export default function StarField() {
       }
       twinklers.current = twinkleList;
 
-      /* ---- 7. Warna atmosfer dekat cakrawala ----
-         Merah jambu dan jingga yang sangat tipis, seperti pijar udara di
-         langit malam. Sengaja tidak jenuh supaya tidak terasa palsu. */
       const airglow = sctx.createLinearGradient(0, h * 0.62, 0, h);
       airglow.addColorStop(0, 'rgba(0,0,0,0)');
       airglow.addColorStop(0.55, 'rgba(96, 62, 74, 0.1)');
@@ -398,7 +325,6 @@ export default function StarField() {
       sctx.fillStyle = airglow;
       sctx.fillRect(0, h * 0.62, w, h * 0.38);
 
-      /* Pijar hangat di kiri bawah, sejalan dengan arah sumber cahaya adegan */
       const warm = sctx.createRadialGradient(
         w * 0.2,
         h * 1.02,
@@ -413,9 +339,6 @@ export default function StarField() {
       sctx.fillStyle = warm;
       sctx.fillRect(0, h * 0.5, w, h * 0.5);
 
-      /* ---- 8. Penggelapan di belakang judul ----
-         Lapisan terakhir. Memakai warna dasar langit, jadi terbaca sebagai
-         wilayah langit yang memang gelap, bukan sebagai kotak hitam. */
       const mask = sctx.createRadialGradient(
         textCx,
         textCy,
@@ -430,7 +353,6 @@ export default function StarField() {
       sctx.fillStyle = mask;
       sctx.fillRect(0, 0, w, h);
 
-      /* ---- 9. Vignette sinematik ---- */
       const vig = sctx.createRadialGradient(
         w * 0.5,
         h * 0.46,
@@ -445,9 +367,6 @@ export default function StarField() {
       sctx.fillRect(0, 0, w, h);
     }
 
-    /* =====================================================================
-     * LAPISAN HIDUP: bintang berkelip dan meteor
-     * ================================================================== */
     function spawnMeteor() {
       const fromLeft = Math.random() > 0.4;
       const angle = fromLeft
@@ -475,8 +394,6 @@ export default function StarField() {
         const k = 0.62 + 0.38 * Math.sin(t * s.speed + s.phase);
         const a = s.alpha * k;
 
-        /* Halo lembut: sprite pijar yang sudah jadi, cukup ditempel. Ukurannya
-           mengikuti radius bintang. Tidak ada pembuatan gradient per frame. */
         const haloSize = s.radius * 12;
         lctx.globalAlpha = Math.min(1, a * 0.5);
         lctx.drawImage(
@@ -487,7 +404,6 @@ export default function StarField() {
           haloSize,
         );
 
-        /* Inti bintang: titik solid kecil. */
         lctx.globalAlpha = Math.min(1, a);
         lctx.fillStyle = `rgb(${s.tint})`;
         lctx.beginPath();
@@ -524,9 +440,6 @@ export default function StarField() {
       }
     }
 
-    /* ---------- loop, dibatasi 24 frame per detik ----------
-       Kelipan bintang itu lambat dan halus, jadi 24fps tak terbedakan dari 30,
-       tapi menyisakan lebih banyak waktu CPU untuk kelancaran scroll. */
     const FRAME_MS = 1000 / 24;
 
     function loop(time) {
@@ -542,7 +455,6 @@ export default function StarField() {
       paintLive(time);
     }
 
-    /* ---------- ukuran ---------- */
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       w = window.innerWidth;
@@ -559,22 +471,11 @@ export default function StarField() {
       meteors = [];
     }
 
-    /* Menggambar langit itu pekerjaan berat, jadi resize ditunda sebentar
-       supaya tidak dijalankan berulang saat jendela sedang diseret. */
     function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(resize, 220);
     }
 
-    /* ---------- paralaks halus ----------
-       Dua sumber gerak digabung pada satu transform:
-         1. pointer: pergeseran kecil mengikuti kursor
-         2. scroll : pergeseran vertikal sangat lambat mengikuti posisi scroll,
-            memberi kesan kamera perlahan bergerak melintasi semesta saat
-            pengguna menelusuri halaman. Faktornya kecil supaya bintang tidak
-            "lari" dari layar, hanya terasa ada kedalaman.
-       Keduanya hanya menggeser wrapper lewat transform, tidak menggambar
-       ulang kanvas, jadi tetap murah. */
     let pointerNX = 0;
     let pointerNY = 0;
     let parallaxRaf = 0;
@@ -598,13 +499,6 @@ export default function StarField() {
       pointerNY = (e.clientY / window.innerHeight - 0.5) * 2;
       queueParallax();
     }
-
-    /* Paralaks scroll sengaja DIHILANGKAN. Menggeser lapisan langit (dua kanvas
-       seukuran layar) di setiap frame scroll memaksa compositing/repaint besar
-       terus-menerus, dan itulah penyebab utama scroll terasa berat. Latar tetap
-       terasa "satu semesta menerus" karena posisinya fixed; tidak perlu ikut
-       bergerak saat scroll. Paralaks pointer tetap ada karena hanya berjalan
-       saat kursor bergerak, bukan saat menggulir. */
 
     function onVisibility() {
       if (document.hidden) {
@@ -643,25 +537,17 @@ export default function StarField() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-void"
     >
-      {/* Wrapper diberi tinggi lebih dan digeser naik sedikit supaya tepi
-          atas/bawah tidak tersingkap saat paralaks pointer menggesernya. */}
       <div
         ref={wrapRef}
         className="absolute -inset-x-0 -top-14 h-[calc(100%+7rem)] will-change-transform"
         style={{ transition: 'transform 0.2s ease-out' }}
       >
-        {/* Langit: digambar sekali, tidak pernah digambar ulang */}
         <canvas ref={staticRef} className="absolute inset-0 h-full w-full" />
-        {/* Bintang berkelip dan meteor */}
         <canvas ref={liveRef} className="absolute inset-0 h-full w-full" />
 
-        {/* Partikel debu antariksa yang mengambang sangat pelan. Hanya
-            beberapa titik lembut, memberi kesan materi melayang di ruang. */}
         <div className="sf-motes absolute inset-0" />
       </div>
 
-      {/* Film grain sangat tipis, memberi tekstur sinematik dan menyamarkan
-          banding gradien. Tetap diam, tidak dianimasikan, agar hemat. */}
       <div className="sf-grain absolute inset-0 opacity-[0.05]" />
     </div>
   );

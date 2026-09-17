@@ -3,44 +3,16 @@ import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { profile } from '../data/content';
 import { useRobotGaze } from './RobotGaze';
 
-/**
- * WalleBot
- * Maskot robot penjelajah. Desainnya orisinal; yang dipinjam hanya wataknya:
- * penasaran, bersahabat, dan suka menjelajah.
- *
- * Kepribadiannya dibangun dari perilaku, bukan dari gerakan berlebihan:
- *  - Mengamati pengguna. Mata dan kepala mengikuti kursor secara halus.
- *  - Penasaran pada navigasi. Saat sebuah tautan disorot, robot menoleh ke
- *    arah tautan itu, mendongak sedikit, lalu berkedip sekali seolah
- *    menyadari sesuatu.
- *  - Punya kehidupan saat menganggur. Bila kursor berhenti, robot memandang
- *    sekeliling perlahan dan sesekali melirik ke arah acak.
- *
- * Yang sengaja TIDAK dilakukan: memantul terus, berputar, bergetar, atau
- * mengejar kursor secara agresif. Kepala hanya bergerak dalam rentang enam
- * derajat, dan seluruh gerak dilewatkan spring supaya terasa punya bobot.
- *
- * Kinerja:
- *  - Gerak memakai motion value, jadi nol render ulang React saat kursor bergerak.
- *  - Listener pointer hanya satu untuk seluruh halaman, dikelola RobotGaze.
- *  - Loop animasi berhenti total saat robot keluar layar atau tab tidak aktif.
- *  - Pembacaan getBoundingClientRect dibatasi empat kali per detik.
- *  - prefers-reduced-motion mematikan seluruh gerak; robot tetap bisa disapa.
- */
-
 const clamp1 = (v) => (v < -1 ? -1 : v > 1 ? 1 : v);
 const rand = (min, max) => min + Math.random() * (max - min);
 
-/* Ambang waktu sebelum robot dianggap menganggur. */
 const IDLE_AFTER = 2600;
-/* Jarak minimal antar kedipan reaksi, supaya tidak berkedip beruntun. */
 const BLINK_COOLDOWN = 900;
 
 export default function WalleBot() {
   const rootRef = useRef(null);
   const gaze = useRobotGaze();
 
-  /* ---- nilai gerak dasar ---- */
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const curiosity = useMotionValue(0);
@@ -49,7 +21,6 @@ export default function WalleBot() {
   const sy = useSpring(py, { stiffness: 90, damping: 17, mass: 0.7 });
   const sCurious = useSpring(curiosity, { stiffness: 120, damping: 20 });
 
-  /* ---- turunan gerak, semuanya dalam rentang kecil ---- */
   const pupilX = useTransform(sx, [-1, 1], [-8, 8]);
   const pupilY = useTransform(sy, [-1, 1], [-6, 6]);
   const glintX = useTransform(sx, [-1, 1], [-6, 6]);
@@ -57,7 +28,6 @@ export default function WalleBot() {
   const headTilt = useTransform(sx, [-1, 1], [6, -6]);
   const bodyShift = useTransform(sx, [-1, 1], [-4, 4]);
 
-  /* Saat penasaran, kepala terangkat sedikit. Itu saja bedanya. */
   const headLiftBase = useTransform(sy, [-1, 1], [-3, 3]);
   const headLiftCurious = useTransform(sCurious, [0, 1], [0, -2.5]);
   const headLift = useTransform(
@@ -69,9 +39,6 @@ export default function WalleBot() {
   const [waving, setWaving] = useState(false);
   const [active, setActive] = useState(false);
 
-  /* Kutipan hanya tampil saat robot disorot (desktop) atau diketuk (mobile).
-     side menentukan gelembung muncul di kanan atau kiri robot, dipilih
-     berdasarkan ruang yang aman agar tidak menabrak apa pun. */
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteSide, setQuoteSide] = useState('right');
 
@@ -83,7 +50,6 @@ export default function WalleBot() {
 
   const quote = profile.robotQuote ?? 'Hello.';
 
-  /* ---------- kedip, dipakai baik berkala maupun sebagai reaksi ---------- */
   const triggerBlink = useCallback((now) => {
     const t = now ?? performance.now();
     if (t - lastBlinkAt.current < BLINK_COOLDOWN) return;
@@ -92,7 +58,6 @@ export default function WalleBot() {
     setTimeout(() => setBlink(false), 150);
   }, []);
 
-  /* ---------- robot hanya hidup saat terlihat ---------- */
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -118,7 +83,6 @@ export default function WalleBot() {
     };
   }, []);
 
-  /* ---------- arah pandang: attractor, kursor, atau menganggur ---------- */
   useEffect(() => {
     if (!active || !gaze) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -126,12 +90,9 @@ export default function WalleBot() {
     let raf = 0;
     let running = true;
 
-    /* Rect robot di-cache. Membacanya tiap frame memicu perhitungan tata
-       letak berulang, jadi dibatasi empat kali per detik. */
     let rect = null;
     let rectAt = 0;
 
-    /* Keadaan perilaku menganggur */
     let glanceUntil = 0;
     let glanceX = 0;
     let glanceY = 0;
@@ -155,8 +116,6 @@ export default function WalleBot() {
 
       const attractor = gaze.attractor.current;
 
-      /* Attractor baru muncul atau berganti: berkedip sekali sebagai tanda
-         menyadari. Ini reaksi diskret, bukan animasi berulang. */
       if (gaze.attractorEpoch.current !== seenEpoch) {
         seenEpoch = gaze.attractorEpoch.current;
         if (attractor) triggerBlink(t);
@@ -170,8 +129,6 @@ export default function WalleBot() {
         (pointer.x === null || t - gaze.lastPointerAt.current > IDLE_AFTER);
 
       if (idle) {
-        /* Memandang sekeliling perlahan. Dua sinus dengan periode berbeda
-           agar polanya tidak terasa berulang. Amplitudonya kecil. */
         const wanderX = Math.sin(t / 4300) * 0.17;
         const wanderY = Math.sin(t / 6700) * 0.09;
 
@@ -192,8 +149,6 @@ export default function WalleBot() {
       const targetY = attractor ? attractor.y : pointer.y;
       if (targetX === null || targetY === null) return;
 
-      /* Saat menoleh ke navigasi, pandangannya sedikit lebih tegas daripada
-         saat sekadar mengikuti kursor. Bedanya tipis. */
       const gain = attractor ? 1.18 : 1;
 
       px.set(clamp1(((targetX - headX) / (window.innerWidth / 2)) * gain));
@@ -207,7 +162,6 @@ export default function WalleBot() {
     };
   }, [active, gaze, px, py, curiosity, triggerBlink]);
 
-  /* ---------- kedip berkala ---------- */
   useEffect(() => {
     if (!active) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -241,10 +195,6 @@ export default function WalleBot() {
     [],
   );
 
-  /* Memilih sisi gelembung yang aman.
-     Lebar gelembung diperkirakan, lalu dicek: apakah muat di kanan robot
-     tanpa keluar layar? kalau tidak, coba kiri. Ini menjaga kutipan tidak
-     pernah menimpa navigasi di tengah maupun keluar dari tepi layar. */
   const chooseSide = useCallback(() => {
     const el = rootRef.current;
     if (!el) return 'right';
@@ -254,15 +204,9 @@ export default function WalleBot() {
     const leftRoom = r.left;
     if (rightRoom >= need) return 'right';
     if (leftRoom >= need) return 'left';
-    /* dua duanya sempit: pilih yang lebih lega (openQuote sudah mencegah
-       kasus benar benar tidak muat, jadi ini hanya jaring pengaman) */
     return rightRoom >= leftRoom ? 'right' : 'left';
   }, []);
 
-  /* Ada cukup ruang untuk gelembung di salah satu sisi tanpa keluar layar?
-     Di layar sempit, robot memenuhi lebar sehingga kedua sisi mustahil. Dalam
-     kasus itu gelembung tidak ditampilkan, sesuai prinsip bahwa navigasi dan
-     tata letak lebih diutamakan daripada kutipan. */
   const hasRoom = useCallback(() => {
     const el = rootRef.current;
     if (!el) return false;
@@ -279,7 +223,6 @@ export default function WalleBot() {
 
   const closeQuote = useCallback(() => setQuoteOpen(false), []);
 
-  /* Desktop: buka saat disorot, tutup saat kursor pergi. */
   const handleEnter = () => {
     if (window.matchMedia('(hover: none)').matches) return;
     openQuote();
@@ -289,9 +232,6 @@ export default function WalleBot() {
     closeQuote();
   };
 
-  /* Klik atau ketuk: robot melambai dan berkedip. Di perangkat sentuh,
-     kutipan ditampilkan sebentar lalu ditutup sendiri, supaya tidak
-     menetap dan mengganggu tata letak. */
   const handleInteract = () => {
     wave();
     triggerBlink();
@@ -306,11 +246,6 @@ export default function WalleBot() {
 
   return (
     <div ref={rootRef} className="relative flex w-full flex-col items-center">
-      {/* ---------- Gelembung kutipan robot ----------
-          Muncul di SAMPING robot, bukan di atas kepalanya, supaya tidak
-          pernah menabrak navigasi maupun headline. Sisinya dipilih dinamis
-          menurut ruang yang tersedia. Kecil dan menyatu dengan karakter,
-          bukan gelembung chatbot. Tampil hanya saat disorot atau diketuk. */}
       <motion.div
         initial={false}
         animate={
@@ -336,7 +271,6 @@ export default function WalleBot() {
           <span className="block font-mono text-[0.74rem] leading-relaxed text-white/85">
             {quote}
           </span>
-          {/* ekor kecil mengarah ke robot */}
           <span
             className={`absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 ${
               onRight ? '-left-1.5' : '-right-1.5'
@@ -352,7 +286,6 @@ export default function WalleBot() {
         </div>
       </motion.div>
 
-      {/* ---------- Robot ---------- */}
       <motion.button
         type="button"
         onClick={handleInteract}
@@ -381,9 +314,6 @@ export default function WalleBot() {
   );
 }
 
-/* ===========================================================================
- * SVG robot
- * ======================================================================== */
 function RobotSVG({
   blink,
   waving,
@@ -404,8 +334,6 @@ function RobotSVG({
       aria-label="Maskot robot penjelajah bermata teropong"
     >
       <defs>
-        {/* Kuning konstruksi yang lapuk, diredam agar cocok dengan cahaya
-            temaram ruang angkasa, bukan cahaya studio. */}
         <linearGradient id="wbBody" x1="0" y1="0" x2="0.3" y2="1">
           <stop offset="0" stopColor="#d0a742" />
           <stop offset="0.45" stopColor="#a8801f" />
@@ -437,28 +365,22 @@ function RobotSVG({
           <stop offset="1" stopColor="#454b54" />
         </linearGradient>
 
-        {/* Rim light dari kiri, mengikuti arah cahaya lingkungan. */}
         <linearGradient id="wbRim" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="rgba(196,222,255,0.5)" />
           <stop offset="0.12" stopColor="rgba(196,222,255,0.14)" />
           <stop offset="0.4" stopColor="rgba(196,222,255,0)" />
         </linearGradient>
 
-        {/* Sisi bayangan di kanan. */}
         <linearGradient id="wbShade" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0.4" stopColor="rgba(5,8,16,0)" />
           <stop offset="1" stopColor="rgba(5,8,16,0.5)" />
         </linearGradient>
 
-        {/* Ambient occlusion di titik pertemuan dua permukaan. */}
         <linearGradient id="wbAO" x1="0" y1="1" x2="0" y2="0">
           <stop offset="0" stopColor="rgba(0,0,0,0.55)" />
           <stop offset="1" stopColor="rgba(0,0,0,0)" />
         </linearGradient>
 
-        {/* Rim light dari langit. Permukaan atas robot menghadap ke langit,
-            jadi menerima cahaya lemah dari seluruh kubah langit. Tanpa ini,
-            bagian atas robot akan tampak lebih gelap daripada lingkungannya. */}
         <linearGradient id="wbSky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="rgba(150,176,220,0.2)" />
           <stop offset="0.24" stopColor="rgba(150,176,220,0.05)" />
@@ -468,7 +390,6 @@ function RobotSVG({
         <filter id="wbShadow" x="-60%" y="-160%" width="220%" height="420%">
           <feGaussianBlur stdDeviation="8" />
         </filter>
-        {/* Bayangan kontak jauh lebih tajam daripada bayangan lunak */}
         <filter id="wbContact" x="-60%" y="-260%" width="220%" height="620%">
           <feGaussianBlur stdDeviation="3" />
         </filter>
@@ -487,11 +408,6 @@ function RobotSVG({
         </clipPath>
       </defs>
 
-      {/* ================= BAYANGAN KONTAK =================
-          Dua lapis. Yang lebar dan kabur adalah bayangan lunak yang jatuh ke
-          kanan menjauhi cahaya. Yang sempit dan pekat adalah bayangan kontak
-          tepat di bawah roda, yang memberi kesan bobot dan membuat robot
-          terbaca benar benar menekan tanah. */}
       <ellipse
         cx="178"
         cy="264"
@@ -509,13 +425,9 @@ function RobotSVG({
         filter="url(#wbContact)"
       />
 
-      {/* ================= AMBIENT OCCLUSION DI BAWAH RODA =================
-          Celah antara roda dan tanah selalu lebih gelap daripada sekitarnya,
-          karena cahaya sekitar tidak sampai ke sana. */}
       <ellipse cx="57" cy="259" rx="52" ry="6" fill="rgba(2,3,8,0.6)" />
       <ellipse cx="263" cy="259" rx="52" ry="6" fill="rgba(2,3,8,0.6)" />
 
-      {/* ================= PUING DI TANAH ================= */}
       <g fill="#0b0d14" opacity="0.9">
         <rect x="18" y="252" width="26" height="9" rx="2" transform="rotate(-5 31 256)" />
         <rect x="272" y="250" width="30" height="10" rx="2" transform="rotate(4 287 255)" />
@@ -524,13 +436,7 @@ function RobotSVG({
         <circle cx="252" cy="257" r="4" />
       </g>
 
-      {/* ================= PECAHAN BESI =================
-          Serpihan logam yang dikumpulkan sang robot pemulung, berserak di
-          tanah dekat roda. Tiap keping punya sisi kiri yang menangkap cahaya
-          (rgba biru pucat, arah sama dengan lingkungan) dan noda karat, jadi
-          terbaca sebagai besi tua, bukan batu. */}
       <g>
-        {/* pelat logam bengkok di kiri, di depan roda kiri */}
         <g transform="rotate(-9 40 250)">
           <polygon points="20,254 58,249 60,258 22,262" fill="#3c424c" />
           <polygon points="20,254 58,249 59,252 21,257" fill="rgba(196,222,255,0.3)" />
@@ -540,14 +446,12 @@ function RobotSVG({
           <path d="M30 256 q10 3 20 0" stroke="rgba(150,86,40,0.4)" strokeWidth="1.2" fill="none" />
         </g>
 
-        {/* baut heksagonal kecil */}
         <g transform="translate(96 260) rotate(12)">
           <polygon points="0,-4 3.5,-2 3.5,2 0,4 -3.5,2 -3.5,-2" fill="#4a515c" />
           <polygon points="0,-4 3.5,-2 0,0 -3.5,-2" fill="rgba(196,222,255,0.32)" />
           <circle cx="0" cy="0" r="1.4" fill="#20242c" />
         </g>
 
-        {/* serpih logam runcing di kanan, dekat roda kanan */}
         <g transform="rotate(7 268 256)">
           <polygon points="250,258 286,250 292,257 268,262" fill="#41474f" />
           <polygon points="250,258 286,250 288,253 255,258" fill="rgba(196,222,255,0.26)" />
@@ -555,7 +459,6 @@ function RobotSVG({
           <path d="M258 258 q14 2 26 -2" stroke="rgba(150,86,40,0.35)" strokeWidth="1" fill="none" />
         </g>
 
-        {/* roda gigi kecil setengah terbenam di tanah, di kanan jauh */}
         <g transform="translate(300 261)">
           <circle r="5.2" fill="#3a4049" />
           {Array.from({ length: 8 }, (_, i) => {
@@ -577,13 +480,11 @@ function RobotSVG({
           <circle r="1.8" fill="#20242c" />
         </g>
 
-        {/* kepingan kecil berserak */}
         <polygon points="112,260 122,257 124,262 114,264" fill="#383e47" transform="rotate(-6 118 260)" />
         <polygon points="112,260 122,257 123,259 113,262" fill="rgba(196,222,255,0.22)" transform="rotate(-6 118 260)" />
         <rect x="150" y="261" width="7" height="3" rx="0.6" fill="#3d434c" transform="rotate(8 153 262)" />
       </g>
 
-      {/* ================= RODA TANK KIRI ================= */}
       <g>
         <rect x="4" y="196" width="106" height="66" rx="33" fill="url(#wbTread)" />
         <g clipPath="url(#wbTreadClipL)" opacity="0.5">
@@ -601,7 +502,6 @@ function RobotSVG({
         <rect x="4" y="196" width="106" height="66" rx="33" fill="url(#wbShade)" />
       </g>
 
-      {/* ================= RODA TANK KANAN ================= */}
       <g>
         <rect x="210" y="196" width="106" height="66" rx="33" fill="url(#wbTread)" />
         <g clipPath="url(#wbTreadClipR)" opacity="0.5">
@@ -619,7 +519,6 @@ function RobotSVG({
         <rect x="210" y="196" width="106" height="66" rx="33" fill="url(#wbShade)" />
       </g>
 
-      {/* ================= LENGAN KIRI (melambai saat menyapa) ================= */}
       <motion.g
         style={{ transformOrigin: '84px 152px' }}
         animate={waving ? { rotate: [0, -36, -15, -36, 0] } : { rotate: 0 }}
@@ -633,7 +532,6 @@ function RobotSVG({
         <rect x="68" y="158" width="4" height="46" rx="2" fill="rgba(196,222,255,0.3)" />
       </motion.g>
 
-      {/* ================= LENGAN KANAN ================= */}
       <g>
         <rect x="234" y="150" width="20" height="12" rx="5" fill="#5c626d" />
         <rect x="237" y="158" width="15" height="46" rx="6" fill="url(#wbMetal)" />
@@ -643,7 +541,6 @@ function RobotSVG({
         <rect x="237" y="158" width="15" height="46" rx="6" fill="url(#wbShade)" />
       </g>
 
-      {/* ================= BADAN KUBUS ================= */}
       <g>
         <rect x="86" y="132" width="148" height="112" rx="12" fill="url(#wbBody)" />
         <rect x="86" y="132" width="148" height="26" rx="12" fill="url(#wbBodyTop)" />
@@ -656,7 +553,6 @@ function RobotSVG({
           <rect x="98" y="166" width="52" height="24" rx="3" fill="#00000024" />
           <rect x="170" y="166" width="52" height="24" rx="3" fill="#00000024" />
 
-          {/* karat dan kotoran */}
           <g opacity="0.3" fill="#5d3312">
             <path d="M96 158 q6 22 2 46 l-9 0 q-5 -24 1 -46 Z" />
             <path d="M224 160 q7 18 4 40 l-8 0 q-4 -22 0 -40 Z" />
@@ -676,7 +572,6 @@ function RobotSVG({
           <rect x="86" y="216" width="148" height="28" fill="url(#wbAO)" />
         </g>
 
-        {/* panel indikator dan lampu hijau */}
         <rect x="158" y="166" width="14" height="24" rx="2.5" fill="#1e222a" />
         <rect x="161" y="170" width="8" height="7" rx="1.5" fill="#4fc93f" />
         <rect
@@ -691,7 +586,6 @@ function RobotSVG({
         />
         <rect x="161" y="180" width="8" height="6" rx="1.5" fill="#33373f" />
 
-        {/* Kode unit. Identitas orisinal, memakai inisial pemilik situs. */}
         <text
           x="160"
           y="228"
@@ -713,11 +607,9 @@ function RobotSVG({
 
         <rect x="86" y="132" width="148" height="112" rx="12" fill="url(#wbRim)" />
         <rect x="86" y="132" width="148" height="112" rx="12" fill="url(#wbShade)" />
-        {/* cahaya lemah dari langit pada permukaan atas badan */}
         <rect x="86" y="132" width="148" height="112" rx="12" fill="url(#wbSky)" />
       </g>
 
-      {/* ================= LEHER ================= */}
       <g>
         <rect x="150" y="96" width="16" height="42" rx="5" fill="#a5842a" />
         <rect x="150" y="96" width="5" height="42" fill="rgba(196,222,255,0.28)" />
@@ -725,7 +617,6 @@ function RobotSVG({
         <ellipse cx="158" cy="136" rx="26" ry="7" fill="rgba(0,0,0,0.35)" />
       </g>
 
-      {/* ================= KEPALA DAN MATA TEROPONG ================= */}
       <motion.g
         style={{ transformOrigin: '158px 104px', y: headLift, rotate: headTilt }}
       >
@@ -733,7 +624,6 @@ function RobotSVG({
         <rect x="126" y="62" width="66" height="6" rx="3" fill="#828997" />
         <rect x="126" y="62" width="66" height="20" rx="9" fill="url(#wbShade)" />
 
-        {/* ---- mata kiri ---- */}
         <g>
           <rect x="112" y="24" width="10" height="16" rx="3" fill="#555b65" />
           <rect x="126" y="20" width="14" height="12" rx="3" fill="#666d78" />
@@ -775,7 +665,6 @@ function RobotSVG({
           <circle cx="126" cy="62" r="34" fill="url(#wbRim)" />
         </g>
 
-        {/* ---- mata kanan ---- */}
         <g>
           <rect x="196" y="24" width="10" height="16" rx="3" fill="#4f555f" />
           <rect x="178" y="20" width="14" height="12" rx="3" fill="#616874" />

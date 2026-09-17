@@ -5,10 +5,6 @@ import Section from './Section';
 import { DistantWorldsFX } from './SectionFX';
 import { Reveal, SectionHeading, Tag } from './ui';
 
-/* ---------- Thumbnail project ----------
-   Menampilkan gambar dari project.image. Jika file gambar belum ada atau
-   gagal dimuat, otomatis beralih ke placeholder bertema (inisial project di
-   atas gradien galaksi), jadi tidak pernah tampil ikon gambar rusak. */
 function ProjectThumb({ project, className = '' }) {
   const [failed, setFailed] = useState(false);
   const initials = project.title
@@ -43,15 +39,12 @@ function ProjectThumb({ project, className = '' }) {
           </span>
         </div>
       )}
-      {/* garis tepi halus supaya menyatu dengan kartu */}
       <span className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/8" />
     </div>
   );
 }
 
-/* ---------- Modal detail project ---------- */
 function ProjectModal({ project, onClose }) {
-  /* Tutup dengan Escape + kunci scroll body */
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
@@ -136,15 +129,18 @@ function ProjectModal({ project, onClose }) {
   );
 }
 
-/* ---------- Kartu project ---------- */
 function ProjectCard({ project, onOpen }) {
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.94 }}
+      transition={{
+        layout: { type: 'spring', stiffness: 260, damping: 30, mass: 0.9 },
+        opacity: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+        scale: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+      }}
       className="glass-panel group relative overflow-hidden rounded-2xl"
     >
       <button
@@ -152,13 +148,11 @@ function ProjectCard({ project, onOpen }) {
         onClick={() => onOpen(project)}
         className="block w-full cursor-pointer text-left"
       >
-        {/* Sorotan warna saat hover */}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -right-20 h-52 w-52 rounded-full bg-nebula/0 blur-[70px] transition-colors duration-500 group-hover:bg-nebula/25"
         />
 
-        {/* Thumbnail di atas kartu */}
         <ProjectThumb
           project={project}
           className="aspect-[16/9] w-full transition-transform duration-500 group-hover:scale-[1.02]"
@@ -196,7 +190,6 @@ function ProjectCard({ project, onOpen }) {
   );
 }
 
-/* ---------- Section ---------- */
 export default function Projects() {
   const [filter, setFilter] = useState('All');
   const [selected, setSelected] = useState(null);
@@ -249,9 +242,14 @@ export default function Projects() {
           </div>
         </Reveal>
 
-        {/* Grid project */}
-        <motion.div layout className="grid gap-5 md:grid-cols-2">
-          <AnimatePresence mode="popLayout">
+        {/* Grid project. Tinggi grid ikut beranimasi mulus (layout spring)
+            saat jumlah kartu berubah, jadi konten di bawahnya tidak melompat. */}
+        <motion.div
+          layout
+          transition={{ type: 'spring', stiffness: 260, damping: 30, mass: 0.9 }}
+          className="grid gap-5 md:grid-cols-2"
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
             {visible.map((project) => (
               <ProjectCard
                 key={project.id}

@@ -1,45 +1,8 @@
 import { SECTION_SURFACES } from '../data/theme';
 
-/**
- * PlanetHorizon
- * Lanskap berbatu di planet asing, tempat maskot robot berdiri.
- *
- * Susunan kedalamannya tiga tingkat, dan tekstur fisiknya makin kuat ke depan:
- *
- *   LATAR      : langit Bima Sakti, ditangani StarField.
- *   TENGAH     : cakrawala planet yang jauh beserta kabut atmosfer. Halus,
- *                pucat, rendah kontras, karena banyak udara yang dilewati
- *                cahaya. Cakrawala yang jauh memang mulus, itu wajar.
- *   DEPAN      : tanah berbatu tempat robot berdiri. Di sinilah seluruh
- *                tekstur fisik berada: bongkahan batu, kerikil, kawah, retakan,
- *                bercak tanah, debu, dan bayangan.
- *
- * Siluet tanahnya dibangun dengan midpoint displacement, bukan kurva bezier.
- * Itu sebabnya tepinya bergerigi dan tidak beraturan, sehingga tidak lagi
- * terbaca sebagai panggung bertingkat.
- *
- * Bongkahan batu TIDAK ikut diregangkan bersama siluet tanah. Siluet memakai
- * preserveAspectRatio none karena garis tanah yang organik memang tidak
- * masalah kalau melebar, tetapi batu dirender sebagai SVG terpisah dengan
- * rasio tetap. Kalau tidak, batu akan tampak seperti paku tipis di layar
- * ponsel dan melebar aneh di layar lebar.
- *
- * Ukuran batu ditetapkan relatif terhadap tinggi robot lewat --bot-h, jadi
- * hubungan skala antara robot dan bebatuan tetap masuk akal di semua layar.
- *
- * SATU sumber cahaya untuk seluruh adegan: pucat kebiruan, datang dari KIRI
- * BAWAH di balik cakrawala. Setiap batu mendapat bidang terang di sisi kiri,
- * dan bayangannya jatuh ke kanan. Rim light pada robot memakai arah yang sama.
- */
-
-/* Cahaya pucat kebiruan, sengaja tidak jenuh supaya tidak terasa neon. */
 const LIGHT = '186, 214, 255';
-/* Warna permukaan section berikutnya, tujuan peralihan warna. */
 const NEXT_SURFACE = SECTION_SURFACES.about;
 
-/* Palet tanah: arang, kelabu gelap, kelabu kebiruan redam, sedikit tanah
- * kecokelatan. Sengaja tidak ada ungu atau biru menyala. Warna dibiarkan
- * datang dari langit. */
 const SOIL = {
   farRock: '#242c39', // kelabu kebiruan, jauh dan berkabut
   midRock: '#161c25', // kelabu gelap
@@ -48,11 +11,6 @@ const SOIL = {
   earth: '44, 36, 24', // cokelat tanah, dipakai sangat tipis sebagai bercak
 };
 
-/* ==========================================================================
- * Pembangkit lanskap. Dijalankan sekali saat modul dimuat, memakai generator
- * acak berbenih supaya bentuk tanah selalu sama di setiap render dan tidak
- * berubah saat komponen dirender ulang.
- * ======================================================================= */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function next() {
@@ -63,16 +21,6 @@ function mulberry32(seed) {
   };
 }
 
-/**
- * Garis tanah bergerigi lewat midpoint displacement.
- *
- * Peluruhan amplitudo dibuat lambat (sekitar 0,74) supaya gerigi halus tetap
- * bertahan sampai tingkat terakhir. Kalau peluruhannya cepat, detail kecilnya
- * hilang dan garisnya kembali terbaca mulus seperti panggung.
- *
- * Di batas atas dan bawah, simpangan dipantulkan ke dalam, bukan dipotong.
- * Memotong akan membuat bagian yang menyentuh batas menjadi rata.
- */
 function jaggedLine(rnd, width, baseY, amp, depth, decay, minY, maxY) {
   let pts = [
     [0, baseY],
@@ -108,7 +56,6 @@ function lineToStroke(pts) {
   return `M${pts.map((p) => `${fmt(p[0])} ${fmt(p[1])}`).join(' L')}`;
 }
 
-/** Bongkahan batu tak beraturan, duduk di garis dasar viewBox 100x72. */
 function rockShape(rnd) {
   const n = 8 + Math.floor(rnd() * 5);
   const pts = [];
@@ -125,16 +72,11 @@ function rockShape(rnd) {
     .map((p) => `${fmt(p[0])} ${fmt(p[1])}`)
     .join(' L')} L97 70 Z`;
 
-  /* Bidang yang menghadap cahaya: sisi kiri atas batu, ditarik ke arah pusat
-     sehingga terbaca sebagai satu permukaan datar yang tersinari. */
   const left = pts.slice(0, Math.ceil(pts.length * 0.46));
   const lit = `M3 70 L${left
     .map((p) => `${fmt(p[0])} ${fmt(p[1])}`)
     .join(' L')} L${fmt(left[left.length - 1][0] - 12)} 70 Z`;
 
-  /* Sisi kanan yang membelakangi cahaya. Dibuat sebagai bidang gelap
-     tersendiri, bukan gradien beridentitas, supaya tidak perlu referensi
-     antar SVG yang rapuh dan tidak menimbulkan id ganda di halaman. */
   const right = pts.slice(Math.floor(pts.length * 0.54));
   const shade = `M${fmt(right[0][0])} 70 L${right
     .map((p) => `${fmt(p[0])} ${fmt(p[1])}`)
@@ -146,18 +88,9 @@ function rockShape(rnd) {
 function buildTerrain() {
   const rnd = mulberry32(73915);
 
-  /* ---- garis tanah, dari yang jauh ke yang dekat ---- */
   const far = jaggedLine(rnd, 1200, 74, 17, 6, 0.72, 48, 98);
   const mid = jaggedLine(rnd, 1200, 88, 21, 6, 0.72, 58, 110);
 
-  /* ---- tanah terdepan ----
-     Punya gundukan di bagian tengah, tepat di tempat robot berdiri, supaya
-     sepertiga bawah rodanya tertutup tanah.
-
-     Urutannya penting. Gerigi dibuat lebih dulu, gundukan ditambahkan di
-     atasnya, lalu seluruh garis diberi jitter halus sekali lagi. Tanpa
-     langkah terakhir itu, lereng gundukan yang curam akan menelan gerigi
-     halusnya dan garisnya kembali terlihat mulus. */
   const FG_W = 1440;
   const FG_H = 240;
   const RISE_CX = 760;
@@ -169,19 +102,11 @@ function buildTerrain() {
     y - 198 * Math.exp(-(((x - RISE_CX) / RISE_W) ** 2)),
   ]);
 
-  /* Jitter halus terakhir, memberi kekasaran seperti kerikil pada seluruh
-     garis termasuk lereng gundukan. */
   near = near.map(([x, y]) => [x, y + (rnd() * 2 - 1) * 7.5]);
 
-  /* Puncak dikunci pada y = 2 supaya perhitungan tumpang tindih dengan roda
-     robot tetap persis seperti yang diverifikasi. */
   const peak = Math.min(...near.map((p) => p[1]));
   near = near.map(([x, y]) => [x, y + (2 - peak)]);
 
-  /* Setelah digeser, sebagian titik bisa jatuh melewati dasar viewBox,
-     sehingga tanah menghilang dan meninggalkan celah. Rentangnya dikompres
-     secara proporsional, bukan dipotong, supaya gerigi tetap utuh sementara
-     tanah selalu punya ketebalan yang terlihat. */
   const lowest = Math.max(...near.map((p) => p[1]));
   const CEILING = 224;
   if (lowest > CEILING) {
@@ -189,8 +114,6 @@ function buildTerrain() {
     near = near.map(([x, y]) => [x, 2 + (y - 2) * k]);
   }
 
-  /* Tinggi tanah pada koordinat x tertentu, dipakai untuk mendudukkan batu
-     tepat di permukaan, bukan mengapung di atasnya. */
   function nearYAt(x) {
     let best = near[0];
     for (const p of near) {
@@ -199,7 +122,6 @@ function buildTerrain() {
     return best[1];
   }
 
-  /* ---- retakan tanah ---- */
   const cracks = [];
   for (let i = 0; i < 5; i += 1) {
     const x0 = 90 + rnd() * 1240;
@@ -216,9 +138,6 @@ function buildTerrain() {
     cracks.push(d);
   }
 
-  /* ---- bercak tanah dan debu di permukaan ----
-     Alpha ditulis langsung pada warnanya, tidak lewat atribut opacity
-     terpisah, supaya tingkat kecerahannya jelas terbaca dari kodenya. */
   const patches = [];
   for (let i = 0; i < 9; i += 1) {
     const o = 0.05 + rnd() * 0.07;
@@ -227,7 +146,6 @@ function buildTerrain() {
       cy: 208 + rnd() * 26,
       rx: 26 + rnd() * 62,
       ry: 4 + rnd() * 8,
-      /* dua dari tiga bercak berupa debu terang, sisanya tanah kecokelatan */
       fill:
         i % 3 === 0
           ? `rgba(${SOIL.earth}, ${(o * 2.6).toFixed(3)})`
@@ -235,9 +153,6 @@ function buildTerrain() {
     });
   }
 
-  /* ---- bongkahan batu ----
-     Sengaja dijauhkan dari rentang 44 sampai 63 persen, yaitu tempat robot
-     berdiri, supaya robot tidak tertutup. Di dekat robot hanya ada kerikil. */
   const rockSpots = [
     { left: 5, k: 0.3 },
     { left: 13, k: 0.19 },
@@ -256,13 +171,11 @@ function buildTerrain() {
     return {
       ...spot,
       ...shape,
-      /* posisi dasar batu sebagai bagian dari tinggi lapisan tanah */
       seat: (FG_H - y) / FG_H,
       flip: rnd() < 0.42,
     };
   });
 
-  /* ---- kerikil, termasuk di sekitar roda robot ---- */
   const stoneSpots = [
     2, 9, 17, 26, 34, 40, 43, 46, 48, 52, 56, 59, 62, 66, 71, 78, 82, 88, 94, 99,
   ];
@@ -279,7 +192,6 @@ function buildTerrain() {
     };
   });
 
-  /* ---- kawah kecil ---- */
   const craters = [
     { left: 27, k: 0.16 },
     { left: 58, k: 0.11 },
@@ -289,7 +201,6 @@ function buildTerrain() {
     return { ...c, seat: (FG_H - y) / FG_H };
   });
 
-  /* ---- batu kecil di kejauhan, di bawah garis cakrawala ---- */
   const distantRocks = [];
   for (let i = 0; i < 14; i += 1) {
     const shape = rockShape(rnd);
@@ -321,12 +232,8 @@ function buildTerrain() {
 
 const T = buildTerrain();
 
-/* Tinggi lapisan tanah terdepan. Dipakai berulang, jadi disimpan sekali. */
 const FG_HEIGHT = 'calc(var(--horizon) - 2.1rem + var(--bot-h) * 0.055)';
 
-/* ==========================================================================
- * Batu sebagai komponen tersendiri, dengan rasio tetap.
- * ======================================================================= */
 function Rock({ left, k, body, lit, shade, seat, flip, tone = SOIL.rockBody }) {
   const size = `calc(var(--bot-h) * ${k})`;
   return (
@@ -341,14 +248,10 @@ function Rock({ left, k, body, lit, shade, seat, flip, tone = SOIL.rockBody }) {
         transform: `translateX(-50%)${flip ? ' scaleX(-1)' : ''}`,
       }}
     >
-      {/* bayangan kontak, jatuh ke kanan menjauhi cahaya */}
       <ellipse cx="58" cy="70" rx="46" ry="6" fill="rgba(3,5,10,0.6)" />
       <path d={body} fill={tone} />
-      {/* sisi kanan yang membelakangi cahaya */}
       <path d={shade} fill="rgba(4,6,12,0.42)" />
-      {/* bidang yang menghadap cahaya */}
       <path d={lit} fill={`rgba(${LIGHT},0.09)`} />
-      {/* tepi atas menangkap cahaya */}
       <path
         d={lit}
         fill="none"
@@ -373,16 +276,13 @@ function Crater({ left, k, seat }) {
         transform: 'translateX(-50%)',
       }}
     >
-      {/* cekungan */}
       <ellipse cx="50" cy="22" rx="44" ry="15" fill="rgba(4,6,11,0.66)" />
-      {/* dinding dalam sisi kanan menerima cahaya dari kiri */}
       <path
         d="M8 22 A44 15 0 0 0 92 22"
         fill="none"
         stroke={`rgba(${LIGHT},0.13)`}
         strokeWidth="2.4"
       />
-      {/* tanggul luar sisi kiri ikut tersinari */}
       <path
         d="M6 20 A46 16 0 0 1 50 5"
         fill="none"
@@ -393,9 +293,6 @@ function Crater({ left, k, seat }) {
   );
 }
 
-/* ==========================================================================
- * Cakrawala planet dan atmosfer. Lapisan tengah.
- * ======================================================================= */
 export default function PlanetHorizon() {
   return (
     <div
@@ -403,11 +300,6 @@ export default function PlanetHorizon() {
       className="pointer-events-none absolute inset-x-0 bottom-0 z-0 overflow-hidden"
       style={{ height: 'calc(var(--horizon) + 26vh)' }}
     >
-      {/* ---- Hamburan atmosfer yang tinggi dan lemah. Selain memberi kesan
-           udara, lapisan ini menaikkan sedikit tingkat gelap langit sehingga
-           bintang di dekat cakrawala kehilangan kontras. Itu perilaku
-           atmosfer yang sebenarnya, dan sekaligus menyatukan planet dengan
-           latar galaksi di belakangnya. ---- */}
       <div
         className="absolute inset-x-0"
         style={{
@@ -417,8 +309,6 @@ export default function PlanetHorizon() {
         }}
       />
 
-      {/* Pijar hangat berdebu tepat di atas cakrawala, sisi kiri, sejalan
-          dengan warna atmosfer di langit. */}
       <div
         className="absolute inset-x-0"
         style={{
@@ -429,7 +319,6 @@ export default function PlanetHorizon() {
         }}
       />
 
-      {/* Cahaya sumber di balik cakrawala */}
       <div
         className="absolute inset-x-0"
         style={{
@@ -439,10 +328,6 @@ export default function PlanetHorizon() {
         }}
       />
 
-      {/* ================= BADAN PLANET =================
-          Cakrawala yang jauh dibiarkan mulus. Itu memang wajar: horizon yang
-          jauh tidak menunjukkan kekasaran permukaan. Seluruh kekasaran
-          ditempatkan pada tanah di depan. */}
       <div
         className="absolute left-1/2 w-[300vw] -translate-x-1/2 overflow-hidden rounded-full"
         style={{
@@ -453,9 +338,6 @@ export default function PlanetHorizon() {
           boxShadow: `inset 0 1px 0 rgba(${LIGHT},0.22), inset 0 12px 26px -14px rgba(${LIGHT},0.24)`,
         }}
       >
-        {/* Terminator: sisi kiri tersinari, sisi kanan jatuh ke bayangan.
-            Anak elemen dibuat selebar layar dan dipusatkan, supaya persentase
-            gradiennya memetakan ke viewport, bukan ke lebar bola yang 300vw. */}
         <div
           className="absolute left-1/2 w-screen -translate-x-1/2"
           style={{
@@ -474,7 +356,6 @@ export default function PlanetHorizon() {
           }}
         />
 
-        {/* Bercak permukaan berkontras rendah: dataran berdebu dan cekungan */}
         <div
           className="absolute left-1/2 w-screen -translate-x-1/2"
           style={{
@@ -497,8 +378,6 @@ export default function PlanetHorizon() {
           }}
         />
 
-        {/* Bukit jauh. Bergerigi, tetapi pucat dan rendah kontras karena
-            perspektif atmosfer. */}
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
@@ -517,7 +396,6 @@ export default function PlanetHorizon() {
           />
         </svg>
 
-        {/* Bukit menengah, lebih gelap dan lebih tegas */}
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
@@ -536,11 +414,6 @@ export default function PlanetHorizon() {
           />
         </svg>
 
-        {/* Batu kecil di kejauhan, memecah garis tanah supaya tidak terbaca
-            sebagai bidang datar.
-            Dibungkus wadah selebar layar. Tanpa ini, persentase left akan
-            mengacu ke lebar bola yang 300vw, sehingga hampir semua batu
-            terlempar keluar layar. */}
         <div
           className="absolute left-1/2 w-screen -translate-x-1/2"
           style={{ top: 0, height: 'var(--horizon)' }}
@@ -563,7 +436,6 @@ export default function PlanetHorizon() {
           ))}
         </div>
 
-        {/* Genangan cahaya di tanah, tempat sinaran menyerempet permukaan */}
         <div
           className="absolute left-1/2 w-screen -translate-x-1/2"
           style={{
@@ -573,9 +445,6 @@ export default function PlanetHorizon() {
           }}
         />
 
-        {/* Peralihan menuju section berikutnya. Warna dasar planet melebur ke
-            warna permukaan section About, jadi tidak ada garis potong antara
-            hero dan section sesudahnya. */}
         <div
           className="absolute left-1/2 w-screen -translate-x-1/2"
           style={{
@@ -586,7 +455,6 @@ export default function PlanetHorizon() {
         />
       </div>
 
-      {/* Sorotan pada tepi planet di sisi yang tersinari */}
       <div
         className="absolute inset-x-0"
         style={{
@@ -599,13 +467,6 @@ export default function PlanetHorizon() {
   );
 }
 
-/* ==========================================================================
- * Tanah terdepan. Digambar DI DEPAN robot.
- *
- * Ini kunci agar robot terasa berdiri di dalam lanskap, bukan di depan sebuah
- * gambar lanskap. Sepertiga bawah rodanya tertutup tanah dan kabut permukaan,
- * lalu ada kerikil serta debu di sekeliling rodanya.
- * ======================================================================= */
 export function HorizonForeground() {
   return (
     <div
@@ -613,7 +474,6 @@ export function HorizonForeground() {
       className="pointer-events-none absolute inset-x-0 z-20"
       style={{ bottom: 0, height: 'calc(var(--horizon) + 2vh)' }}
     >
-      {/* Kabut permukaan yang melarutkan kaki robot ke dalam tanah */}
       <div
         className="absolute inset-x-0"
         style={{
@@ -624,10 +484,6 @@ export function HorizonForeground() {
         }}
       />
 
-      {/* ---- Siluet tanah terdepan ----
-           Dibangun dengan midpoint displacement, jadi tepinya bergerigi dan
-           tidak beraturan. Diregangkan penuh, dan itu tidak masalah karena
-           garis tanah organik tetap terbaca wajar saat melebar. */}
       <svg
         viewBox={`0 0 ${T.FG_W} ${T.FG_H}`}
         preserveAspectRatio="none"
@@ -636,8 +492,6 @@ export function HorizonForeground() {
       >
         <path d={T.near.path} fill={SOIL.nearRock} />
 
-        {/* Tepi tanah menangkap cahaya. Sisi kiri lebih terang, sisi kanan
-            dibiarkan gelap karena membelakangi cahaya. */}
         <path
           d={T.near.stroke}
           fill="none"
@@ -646,7 +500,6 @@ export function HorizonForeground() {
           strokeLinejoin="round"
         />
 
-        {/* Bercak tanah dan debu di permukaan */}
         {T.patches.map((p, i) => (
           <ellipse
             key={i}
@@ -658,7 +511,6 @@ export function HorizonForeground() {
           />
         ))}
 
-        {/* Retakan tanah, dengan tepi tipis yang tersinari di satu sisi */}
         {T.cracks.map((d, i) => (
           <g key={i}>
             <path d={d} fill="none" stroke="rgba(3,4,9,0.85)" strokeWidth="1.8" />
@@ -673,25 +525,18 @@ export function HorizonForeground() {
         ))}
       </svg>
 
-      {/* ---- Kawah kecil ---- */}
       {T.craters.map((c, i) => (
         <Crater key={i} {...c} />
       ))}
 
-      {/* ---- Bongkahan batu. Rasionya tetap, jadi bentuknya tidak melenceng
-           di layar sempit maupun lebar. ---- */}
       {T.rocks.map((r, i) => (
         <Rock key={i} {...r} />
       ))}
 
-      {/* ---- Kerikil, termasuk beberapa di sekitar roda robot ---- */}
       {T.stones.map((s, i) => (
         <Rock key={`s${i}`} {...s} tone={SOIL.rockBody} />
       ))}
 
-      {/* ---- Debu di sekeliling roda robot ----
-           Sedikit debu yang menempel di titik kontak, memberi kesan bobot dan
-           menyatukan roda dengan permukaan. ---- */}
       <div
         className="absolute left-1/2 -translate-x-1/2"
         style={{
@@ -716,13 +561,6 @@ export function HorizonForeground() {
   );
 }
 
-/* ==========================================================================
- * Planet kecil jauh di langit. Lapisan kedalaman paling belakang di dalam
- * hero. Sisi kirinya tersinari, mengikuti arah cahaya yang sama.
- * ======================================================================= */
-/* Kawah bulan. Tiap kawah punya tepi tersinari di kiri atas (menghadap cahaya)
- * dan lantai yang lebih gelap, jadi terbaca cekung, bukan sekadar bintik.
- * Koordinat dalam viewBox 100x100. */
 const MOON_CRATERS = [
   { x: 40, y: 34, r: 8.5 },
   { x: 62, y: 30, r: 5 },
@@ -745,19 +583,16 @@ export function DistantPlanet() {
     >
       <svg viewBox="0 0 100 100" className="h-full w-full">
         <defs>
-          {/* Permukaan bulan: tersinari di kiri atas, menggelap ke kanan bawah */}
           <radialGradient id="moonBody" cx="34%" cy="30%" r="78%">
             <stop offset="0%" stopColor="#454f66" />
             <stop offset="42%" stopColor="#28303f" />
             <stop offset="74%" stopColor="#141821" />
             <stop offset="100%" stopColor="#0a0d13" />
           </radialGradient>
-          {/* Terminator: bayangan halus di sisi kanan bawah */}
           <radialGradient id="moonShade" cx="30%" cy="26%" r="82%">
             <stop offset="55%" stopColor="rgba(4,6,12,0)" />
             <stop offset="100%" stopColor="rgba(4,6,12,0.5)" />
           </radialGradient>
-          {/* Klip supaya semua detail tetap di dalam lingkaran bulan */}
           <clipPath id="moonClip">
             <circle cx="50" cy="50" r="49" />
           </clipPath>
@@ -766,16 +601,12 @@ export function DistantPlanet() {
         <g clipPath="url(#moonClip)">
           <circle cx="50" cy="50" r="49" fill="url(#moonBody)" />
 
-          {/* Maria: dataran gelap luas, memberi karakter permukaan */}
           <ellipse cx="58" cy="62" rx="26" ry="19" fill="rgba(8,11,17,0.34)" />
           <ellipse cx="38" cy="40" rx="16" ry="13" fill="rgba(8,11,17,0.24)" />
 
-          {/* Kawah */}
           {MOON_CRATERS.map((c, i) => (
             <g key={i}>
-              {/* lantai kawah, sedikit lebih gelap dari sekitarnya */}
               <circle cx={c.x} cy={c.y} r={c.r} fill="rgba(6,9,14,0.4)" />
-              {/* tepi tersinari di sisi menghadap cahaya (kiri atas) */}
               <path
                 d={`M ${c.x - c.r * 0.72} ${c.y - c.r * 0.72} A ${c.r} ${c.r} 0 0 1 ${c.x + c.r * 0.72} ${c.y - c.r * 0.72}`}
                 fill="none"
@@ -784,7 +615,6 @@ export function DistantPlanet() {
                 strokeLinecap="round"
                 transform={`rotate(-45 ${c.x} ${c.y})`}
               />
-              {/* bayangan tipis di dinding seberang (kanan bawah) */}
               <path
                 d={`M ${c.x + c.r * 0.7} ${c.y + c.r * 0.7} A ${c.r} ${c.r} 0 0 1 ${c.x - c.r * 0.7} ${c.y + c.r * 0.7}`}
                 fill="none"
@@ -796,7 +626,6 @@ export function DistantPlanet() {
             </g>
           ))}
 
-          {/* butiran halus permukaan */}
           <g fill="rgba(6,9,14,0.28)">
             <circle cx="48" cy="24" r="1.4" />
             <circle cx="66" cy="44" r="1.2" />
@@ -805,9 +634,7 @@ export function DistantPlanet() {
             <circle cx="52" cy="48" r="1.1" />
           </g>
 
-          {/* terminator di atas semuanya */}
           <circle cx="50" cy="50" r="49" fill="url(#moonShade)" />
-          {/* sorotan tepi tipis di busur yang menghadap cahaya */}
           <path
             d="M 12 30 A 49 49 0 0 1 44 8"
             fill="none"

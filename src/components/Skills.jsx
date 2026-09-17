@@ -3,24 +3,16 @@ import { AnimatePresence, motion } from 'motion/react';
 import { skillCategories, skills } from '../data/content';
 import Section from './Section';
 import { ConstellationFX } from './SectionFX';
-import { Reveal, Tag } from './ui';
+import { Reveal } from './ui';
 
-/* Jumlah baris keyboard diambil langsung dari data skill. */
 const ROWS = [...new Set(skills.map((s) => s.row))].sort((a, b) => a - b);
 
-/* Helper warna: bikin sisi keycap lebih gelap dari permukaannya. */
 const shade = (color, percentBlack) =>
   `color-mix(in srgb, ${color} ${100 - percentBlack}%, #000)`;
 
-/* Helper warna: bikin permukaan keycap lebih terang (untuk highlight). */
 const tint = (color, percentWhite) =>
   `color-mix(in srgb, ${color} ${100 - percentWhite}%, #fff)`;
 
-/* -----------------------------------------------------------------------------
- * Satu keycap 3D.
- * Dibentuk dari 5 bidang: permukaan atas + 4 dinding samping,
- * semuanya disusun dengan CSS transform di dalam ruang preserve-3d.
- * -------------------------------------------------------------------------- */
 function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
   const { Icon } = skill;
 
@@ -35,14 +27,12 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
       className="preserve-3d group relative block cursor-pointer border-0 bg-transparent p-0"
       style={{ width: 'var(--cap)', height: 'var(--cap)' }}
     >
-      {/* Bayangan keycap di atas plate */}
       <span
         aria-hidden="true"
         className="absolute inset-0 rounded-[16%] bg-black/70 blur-[3px]"
         style={{ transform: 'translateZ(1px) translate(6%, 6%)' }}
       />
 
-      {/* Wrapper yang bergerak turun saat tombol ditekan */}
       <span
         aria-hidden="true"
         className="preserve-3d absolute inset-0 transition-transform duration-150 ease-out"
@@ -54,7 +44,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
               : 'translateZ(0)',
         }}
       >
-        {/* --- dinding utara --- */}
         <span
           className="absolute bottom-full left-0 w-full origin-bottom rounded-t-[10%]"
           style={{
@@ -63,7 +52,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
             background: shade(skill.cap, 58),
           }}
         />
-        {/* --- dinding barat --- */}
         <span
           className="absolute top-0 right-full h-full origin-right"
           style={{
@@ -72,7 +60,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
             background: shade(skill.cap, 52),
           }}
         />
-        {/* --- dinding timur --- */}
         <span
           className="absolute top-0 left-full h-full origin-left"
           style={{
@@ -81,7 +68,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
             background: shade(skill.cap, 34),
           }}
         />
-        {/* --- dinding selatan (paling terang, menghadap penonton) --- */}
         <span
           className="absolute top-full left-0 w-full origin-top rounded-b-[10%]"
           style={{
@@ -91,7 +77,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
           }}
         />
 
-        {/* --- permukaan atas --- */}
         <span
           className="absolute inset-0 flex flex-col items-center justify-center gap-[6%] rounded-[16%] shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-3px_6px_rgba(0,0,0,0.32)]"
           style={{
@@ -114,12 +99,10 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
             {skill.key}
           </span>
 
-          {/* Kilau saat hover */}
           <span className="pointer-events-none absolute inset-0 rounded-[16%] bg-white/0 transition-colors duration-200 group-hover:bg-white/14" />
         </span>
       </span>
 
-      {/* Halo bila keycap sedang aktif */}
       {isActive && (
         <span
           aria-hidden="true"
@@ -134,9 +117,6 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
   );
 }
 
-/* -----------------------------------------------------------------------------
- * Panel penjelasan skill yang aktif.
- * -------------------------------------------------------------------------- */
 function SkillDetail({ skill }) {
   const { Icon } = skill;
 
@@ -150,7 +130,6 @@ function SkillDetail({ skill }) {
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         className="glass-panel relative overflow-hidden rounded-3xl p-7 sm:p-9"
       >
-        {/* Aksen warna skill */}
         <span
           aria-hidden="true"
           className="absolute -top-24 -right-16 h-56 w-56 rounded-full opacity-25 blur-[80px]"
@@ -164,8 +143,7 @@ function SkillDetail({ skill }) {
           }}
         />
 
-        <div className="relative grid gap-8 lg:grid-cols-[1fr_0.85fr]">
-          {/* Kiri: identitas + penjelasan */}
+        <div className="relative">
           <div>
             <div className="mb-6 flex items-center gap-4">
               <span
@@ -213,46 +191,14 @@ function SkillDetail({ skill }) {
               </div>
             </dl>
           </div>
-
-          {/* Kanan: proficiency + fokus */}
-          <div className="lg:border-l lg:border-white/8 lg:pl-8">
-            <p className="label-mono mb-3 text-white/40">Proficiency</p>
-            <div className="mb-2 flex items-end justify-between">
-              <span className="font-display text-4xl leading-none font-light text-white">
-                {skill.level}
-                <span className="text-lg text-white/35">%</span>
-              </span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/8">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${skill.level}%` }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full rounded-full"
-                style={{
-                  background: `linear-gradient(90deg, ${shade(skill.cap, 26)}, ${skill.cap})`,
-                }}
-              />
-            </div>
-
-            <p className="label-mono mt-8 mb-3 text-white/40">Focus</p>
-            <div className="flex flex-wrap gap-2">
-              {skill.tags.map((tag) => (
-                <Tag key={tag}>{tag}</Tag>
-              ))}
-            </div>
-          </div>
         </div>
       </motion.div>
     </AnimatePresence>
   );
 }
 
-/* -----------------------------------------------------------------------------
- * Section Skills
- * -------------------------------------------------------------------------- */
 export default function Skills() {
-  const [activeId, setActiveId] = useState('docker');
+  const [activeId, setActiveId] = useState(skills[0]?.id ?? '');
   const [pressedId, setPressedId] = useState(null);
   const [inView, setInView] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
@@ -264,7 +210,6 @@ export default function Skills() {
     [activeId],
   );
 
-  /* Peta tombol fisik -> skill */
   const keyMap = useMemo(() => {
     const map = new Map();
     skills.forEach((s) => map.set(s.key.toUpperCase(), s));
@@ -278,10 +223,8 @@ export default function Skills() {
     pressTimer.current = setTimeout(() => setPressedId(null), 190);
   }, []);
 
-  /* Preview saat hover: mengubah skill aktif tanpa animasi tekan */
   const preview = useCallback((id) => setActiveId(id), []);
 
-  /* Pindah pilihan dengan tombol panah */
   const step = useCallback(
     (delta) => {
       const idx = skills.findIndex((s) => s.id === activeId);
@@ -293,13 +236,10 @@ export default function Skills() {
 
   useEffect(() => () => clearTimeout(pressTimer.current), []);
 
-  /* Deteksi perangkat sentuh untuk menyesuaikan teks petunjuk */
   useEffect(() => {
     setIsTouch(window.matchMedia('(hover: none)').matches);
   }, []);
 
-  /* Section harus terlihat dulu sebelum keyboard fisik aktif,
-     supaya tidak mengganggu saat user mengetik di form kontak. */
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -347,7 +287,6 @@ export default function Skills() {
   return (
     <Section id="skills" center={false} atmosphere={<ConstellationFX />}>
       <div ref={sectionRef} className="mx-auto max-w-7xl">
-        {/* ---------- Header ---------- */}
         <div className="mb-4 flex items-center gap-4">
           <span className="label-mono text-sm text-nebula sm:text-base">02 — Skills</span>
           <span className="h-px w-20 bg-gradient-to-r from-nebula/70 to-transparent" />
@@ -369,7 +308,6 @@ export default function Skills() {
           </p>
         </Reveal>
 
-        {/* ---------- Petunjuk ---------- */}
         <Reveal delay={0.16}>
           <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-white/35">
             <span className="text-stardust">
@@ -385,36 +323,32 @@ export default function Skills() {
           </p>
         </Reveal>
 
-        {/* ---------- Panggung keyboard ---------- */}
-        <div className="relative mt-14 lg:mt-8">
-          {/* Label besar miring, mengikuti sudut keyboard (desktop) */}
-          <div className="pointer-events-none absolute top-1/2 left-0 z-20 hidden -translate-y-1/2 lg:block">
+        <div className="relative mt-12 lg:mt-6">
+          <div className="pointer-events-none absolute top-1/2 left-0 z-0 hidden w-[30%] -translate-y-1/2 lg:block">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSkill.id}
-                initial={{ opacity: 0, x: -24 }}
+                initial={{ opacity: 0, x: -18 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 16 }}
+                exit={{ opacity: 0, x: 12 }}
                 transition={{ duration: 0.3 }}
-                className="origin-center -rotate-[57deg]"
               >
                 <p
-                  className="font-display text-6xl leading-none font-medium tracking-tight whitespace-nowrap xl:text-7xl"
+                  className="font-display font-medium leading-[1.02] tracking-tight text-white/85"
                   style={{
-                    color: '#fff',
-                    textShadow: `0 0 34px ${activeSkill.cap}aa, 0 2px 10px rgba(0,0,0,0.8)`,
+                    fontSize: 'clamp(2rem, 3vw, 3.25rem)',
+                    textShadow: `0 0 34px ${activeSkill.cap}66, 0 2px 10px rgba(0,0,0,0.85)`,
                   }}
                 >
                   {activeSkill.name}
                 </p>
-                <p className="mt-2 font-mono text-sm tracking-[0.14em] whitespace-nowrap text-white/55">
+                <p className="mt-3 font-mono text-xs tracking-[0.14em] text-white/45">
                   {activeSkill.tagline}
                 </p>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Label versi mobile / tablet */}
           <div className="mb-8 text-center lg:hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -437,13 +371,11 @@ export default function Skills() {
             </AnimatePresence>
           </div>
 
-          {/* Keyboard 3D */}
-          <div className="keyboard-scene flex justify-center overflow-hidden py-10 sm:py-14 lg:py-20">
+          <div className="keyboard-scene relative z-10 flex justify-center overflow-hidden py-8 sm:py-12 lg:py-16">
             <div
-              className="preserve-3d [--cap:28px] [--gap:5px] [--h:13px] sm:[--cap:40px] sm:[--gap:7px] sm:[--h:18px] md:[--cap:50px] md:[--gap:9px] md:[--h:21px] lg:[--cap:62px] lg:[--gap:11px] lg:[--h:26px]"
+              className="preserve-3d [--cap:28px] [--gap:5px] [--h:13px] sm:[--cap:40px] sm:[--gap:7px] sm:[--h:18px] md:[--cap:50px] md:[--gap:9px] md:[--h:21px] lg:[--cap:58px] lg:[--gap:10px] lg:[--h:24px]"
               style={{ transform: 'rotateX(54deg) rotateZ(-32deg)' }}
             >
-              {/* Plate / body keyboard */}
               <div
                 className="preserve-3d relative rounded-[18px] p-[calc(var(--gap)*1.8)]"
                 style={{
@@ -486,12 +418,10 @@ export default function Skills() {
           </div>
         </div>
 
-        {/* ---------- Penjelasan skill aktif ---------- */}
         <div className="mt-4 lg:mt-2">
           <SkillDetail skill={activeSkill} />
         </div>
 
-        {/* ---------- Legenda kategori ---------- */}
         <Reveal delay={0.1}>
           <div className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             {skillCategories.map((cat, i) => {

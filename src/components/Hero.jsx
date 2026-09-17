@@ -8,41 +8,13 @@ import { RobotGazeProvider, useGazeAttractor } from './RobotGaze';
 import WalleBot from './WalleBot';
 import { handleNavClick } from '../lib/smoothScroll';
 
-/* Tujuan utama yang ditawarkan di hero. */
 const HERO_LINK_IDS = ['about', 'skills', 'projects', 'experience', 'contact'];
 const HERO_LINKS = HERO_LINK_IDS.map((id) =>
   navLinks.find((l) => l.id === id),
 ).filter(Boolean);
 
-/* Kurva easing sinematik, dipakai seragam di seluruh hero. */
 const EASE = [0.22, 1, 0.36, 1];
 
-/**
- * MaskedLine
- * Satu baris teks yang tersingkap dari balik mask.
- *
- * Teks berada di dalam wadah overflow-hidden. Pada keadaan awal, teks digeser
- * turun sejauh tingginya sendiri sehingga tersembunyi di bawah garis potong
- * mask, sekaligus sedikit buram. Saat tampil, teks meluncur naik ke tempatnya
- * dan menjadi tajam. Inilah reveal bertopeng yang diminta, bukan sekadar fade.
- *
- * Menerima delay agar tiap baris bisa disusun berurutan.
- */
-/**
- * MaskedLine
- * Satu baris teks yang MASUK ke layar melalui sebuah mask, seolah tipografi
- * itu berjalan menuju tempatnya lalu berhenti.
- *
- * Wadah luar memakai overflow-hidden, jadi selama bergerak teks yang masih di
- * luar posisinya tidak terlihat, hanya tampak melintas melalui celah mask.
- * Geser awal memakai satuan piksel (bukan persen) supaya teks benar benar
- * berada di luar area terpotong, memberi kesan perjalanan yang tegas.
- *
- * dir menentukan arah masuk: 'left' datang dari kiri, 'right' dari kanan.
- * Gerak horizontal kuat (sekitar 100px) dipadu gerak vertikal sangat halus.
- * Easing sinematik dengan deselerasi kuat, tanpa pantulan. Setelah selesai,
- * teks diam total: nilai animate adalah keadaan akhir yang bertahan.
- */
 function MaskedLine({ children, delay, className = '', reduce, dir = 'left', accent = false }) {
   if (reduce) {
     return (
@@ -61,9 +33,6 @@ function MaskedLine({ children, delay, className = '', reduce, dir = 'left', acc
 
   const fromX = dir === 'left' ? -104 : 104;
 
-  /* Baris beraksen memakai background-clip: text. Menganimasikan filter blur
-     pada elemen yang sama akan mematahkan clipping itu dan membuat teksnya
-     tampak hilang, jadi untuk baris aksen blur dilewati. */
   const initial = accent
     ? { x: fromX, y: 14, opacity: 0 }
     : { x: fromX, y: 14, opacity: 0, filter: 'blur(4px)' };
@@ -98,9 +67,6 @@ function HeroContent() {
   const gazeAttractor = useGazeAttractor();
   const reduce = useReducedMotion();
 
-  /* Jadwal masuk. Tiap elemen mulai sekitar 140ms setelah yang sebelumnya.
-       Seluruh rangkaian selesai sekitar 1,3 detik (baris terakhir mulai
-       0,56s, durasi 0,92s). */
   const t = {
     intro: 0,
     name: 0.14,
@@ -118,15 +84,11 @@ function HeroContent() {
                  sm:[--bot-h:12rem] sm:[--horizon:24vh]
                  lg:[--bot-h:14.5rem] lg:[--horizon:28vh]"
     >
-      {/* ================= LINGKUNGAN ================= */}
       <PlanetHorizon />
       <DistantPlanet />
 
-      {/* ================= TEKS (fokus utama) ================= */}
       <div className="relative z-30 flex flex-1 items-center justify-center px-6 pt-20 lg:px-10">
         <div className="w-full text-center">
-          {/* 1. Intro: letter-spacing menyempit, buram menjadi tajam,
-                posisi turun menyettel ke tempatnya. */}
           <motion.p
             initial={
               reduce
@@ -144,7 +106,6 @@ function HeroContent() {
             {profile.heroIntro}
           </motion.p>
 
-          {/* 2. Nama: reveal bertopeng, meluncur naik dari balik mask. */}
           <h2
             className="mb-9 font-display font-light tracking-[-0.01em] text-white/90 sm:mb-10"
             style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)', lineHeight: 1.14 }}
@@ -154,8 +115,6 @@ function HeroContent() {
             </MaskedLine>
           </h2>
 
-          {/* 3. Headline: tiap baris tersingkap terpisah dari balik mask.
-                Baris ketiga memakai aksen cahaya yang bergerak lambat. */}
           <h1
             className="mx-auto max-w-[20ch] font-display font-light tracking-[-0.025em] text-balance text-white"
             style={{ fontSize: 'clamp(2.6rem, 7vw, 5.5rem)', lineHeight: 1.06 }}
@@ -176,7 +135,6 @@ function HeroContent() {
             </MaskedLine>
           </h1>
 
-          {/* 4. Navigasi: muncul paling akhir dengan fade lembut. */}
           <motion.nav
             aria-label="Navigasi utama"
             initial={{ opacity: 0, y: 12 }}
@@ -213,10 +171,6 @@ function HeroContent() {
         </div>
       </div>
 
-      {/* ================= ZONA ROBOT =================
-          Ruang ini ikut perhitungan tata letak (bukan absolut), sehingga
-          selalu tersedia untuk robot dan cakrawala, dan mencegah tabrakan
-          dengan teks. */}
       <div
         className="relative z-10 shrink-0"
         style={{ height: 'calc(var(--horizon) + var(--bot-h) - 2.1rem)' }}
@@ -228,16 +182,12 @@ function HeroContent() {
           className="absolute inset-x-0 flex justify-center"
           style={{ bottom: 'calc(var(--horizon) - 2.1rem)' }}
         >
-          {/* Lebar dihitung dari tinggi: viewBox 320x300, jadi w = h x 1.067 */}
           <div className="translate-x-[7%]" style={{ width: 'calc(var(--bot-h) * 1.067)' }}>
             <WalleBot />
           </div>
         </motion.div>
       </div>
 
-      {/* ================= TANAH TERDEKAT =================
-          Digambar di depan robot, sehingga kakinya tertutup sedikit oleh
-          gundukan tanah dan kabut permukaan. */}
       <HorizonForeground />
     </section>
   );

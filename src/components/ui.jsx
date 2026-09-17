@@ -1,6 +1,5 @@
 import { motion } from 'motion/react';
 
-/** Wrapper reveal saat elemen masuk viewport. */
 export function Reveal({ children, delay = 0, y = 26, className = '' }) {
   return (
     <motion.div
@@ -15,7 +14,6 @@ export function Reveal({ children, delay = 0, y = 26, className = '' }) {
   );
 }
 
-/** Judul section dengan penanda "koordinat" bergaya galaksi. */
 export function SectionHeading({ index, eyebrow, title, subtitle, align = 'left' }) {
   return (
     <div className={align === 'center' ? 'text-center' : ''}>
@@ -53,7 +51,6 @@ export function SectionHeading({ index, eyebrow, title, subtitle, align = 'left'
   );
 }
 
-/** Tag/pill kecil untuk stack teknologi & skill. */
 export function Tag({ children, tone = 'default' }) {
   const tones = {
     default: 'border-white/12 bg-white/5 text-white/65',
@@ -69,29 +66,3 @@ export function Tag({ children, tone = 'default' }) {
   );
 }
 
-/** Tombol utama bergaya "portal". */
-export function GlowButton({ as = 'a', children, className = '', ...rest }) {
-  const Comp = as;
-  return (
-    <Comp
-      className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-nebula/40 bg-nebula/15 px-6 py-3 font-mono text-xs tracking-[0.18em] uppercase text-white transition duration-300 hover:border-nebula hover:bg-nebula/25 ${className}`}
-      {...rest}
-    >
-      <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-      <span className="relative">{children}</span>
-    </Comp>
-  );
-}
-
-/** Tombol sekunder (outline tipis). */
-export function GhostButton({ as = 'a', children, className = '', ...rest }) {
-  const Comp = as;
-  return (
-    <Comp
-      className={`inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 font-mono text-xs tracking-[0.18em] uppercase text-white/70 transition duration-300 hover:border-white/40 hover:text-white ${className}`}
-      {...rest}
-    >
-      {children}
-    </Comp>
-  );
-}

@@ -11,15 +11,11 @@ import SectionDivider from './components/SectionDivider';
 export default function App() {
   return (
     <>
-      {/* Latar galaksi, menempel di viewport dan tidak ikut scroll */}
       <StarField />
 
       <main className="relative z-10">
         <Hero />
         <About />
-        {/* Pemisah sinematik: jeda halus "memasuki bab berikutnya", tanpa
-            memutus lingkungan yang menerus. Hero ke About tidak diberi
-            pemisah karena sudah menyatu lewat cakrawala planet. */}
         <SectionDivider />
         <Skills />
         <SectionDivider />
@@ -30,7 +26,6 @@ export default function App() {
         <Contact />
       </main>
 
-      {/* Pill navigasi: muncul saat berhenti scroll di luar section home */}
       <FloatingNav />
     </>
   );
