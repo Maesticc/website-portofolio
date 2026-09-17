@@ -11,7 +11,7 @@ import {
   SiInstagram,
   SiGmail,
 } from 'react-icons/si';
-import { FaJava, FaLinkedin } from 'react-icons/fa6';
+import { FaJava, FaLinkedin, FaRegFilePdf } from 'react-icons/fa6';
 
 /* -----------------------------------------------------------------------------
  * PROFILE  [EDIT]
@@ -82,6 +82,14 @@ export const socials = [
     handle: '@darren.vincent_',
     url: 'https://www.instagram.com/darren.vincent_/',
     Icon: SiInstagram,
+  },
+  {
+    label: 'Curriculum Vitae',
+    handle: 'View my CV',
+    /* Taruh file CV di public/cv.pdf (atau ganti url ini ke tautan Google
+       Drive/Dropbox milikmu). Dibuka di tab baru. */
+    url: '/cv.pdf',
+    Icon: FaRegFilePdf,
   },
 ];
 
