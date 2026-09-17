@@ -331,7 +331,7 @@ function RobotSVG({
       viewBox="0 0 320 300"
       className="h-auto w-full"
       role="img"
-      aria-label="Maskot robot penjelajah bermata teropong"
+      aria-label="Explorer robot mascot with binocular eyes"
     >
       <defs>
         <linearGradient id="wbBody" x1="0" y1="0" x2="0.3" y2="1">

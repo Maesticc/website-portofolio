@@ -23,7 +23,7 @@ function Keycap({ skill, isActive, isPressed, onActivate, onPreview }) {
       onMouseEnter={() => onPreview(skill.id)}
       onFocus={() => onActivate(skill.id, 'focus')}
       aria-pressed={isActive}
-      aria-label={`${skill.name} — ${skill.category}. Tekan tombol ${skill.key} untuk detail.`}
+      aria-label={`${skill.name} — ${skill.category}. Press the ${skill.key} key for details.`}
       className="preserve-3d group relative block cursor-pointer border-0 bg-transparent p-0"
       style={{ width: 'var(--cap)', height: 'var(--cap)' }}
     >
@@ -168,7 +168,7 @@ function SkillDetail({ skill }) {
 
               <kbd
                 className="ml-auto hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] font-mono text-sm text-white/70 sm:flex"
-                title={`Tekan ${skill.key} di keyboard kamu`}
+                title={`Press ${skill.key} on your keyboard`}
               >
                 {skill.key}
               </kbd>
