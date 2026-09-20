@@ -15,7 +15,6 @@ A personal portfolio with an outer-space theme, an explorer robot mascot whose e
 
 [![Live on Vercel](https://img.shields.io/badge/Live-website--portofolio--maesticc.vercel.app-000000?style=flat-square&logo=vercel&logoColor=white)](https://website-portofolio-maesticc.vercel.app/)
 [![Made by Darren Vincent](https://img.shields.io/badge/Made_by-Darren_Vincent-8B5CF6?style=flat-square)](https://github.com/Maesticc)
-[![License](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](#-license)
 
 <br/>
 
@@ -37,7 +36,6 @@ A personal portfolio with an outer-space theme, an explorer robot mascot whose e
 - [Featured Projects](#-featured-projects)
 - [Customization](#-customization)
 - [Contact](#-contact)
-- [License](#-license)
 
 ---
 
@@ -219,12 +217,6 @@ Everything personal lives in one place — no need to touch components.
 [![Email](https://img.shields.io/badge/Email-darrenvincent547@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:darrenvincent547@gmail.com)
 
 </div>
-
----
-
-## 📄 License
-
-Released under the **MIT License** — feel free to explore, learn from, and build upon it.
 
 <div align="center">
 
