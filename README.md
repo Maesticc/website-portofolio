@@ -18,7 +18,7 @@ A personal portfolio with an outer-space theme, an explorer robot mascot whose e
 
 <br/>
 
-**[✨ Live Demo](https://website-portofolio-maesticc.vercel.app/) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [🛠 Tech Stack](#-tech-stack) &nbsp;·&nbsp; [📬 Contact](#-contact)**
+**[✨ Live Demo](https://portofolio-darren-vincent.vercel.app/) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start) &nbsp;·&nbsp; [🛠 Tech Stack](#-tech-stack) &nbsp;·&nbsp; [📬 Contact](#-contact)**
 
 </div>
 
