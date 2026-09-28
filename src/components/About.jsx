@@ -11,9 +11,8 @@ export default function About() {
           eyebrow="About Me"
           title={
             <>
-              Curious by nature,
-              <br />
-              <span className="text-aurora">driven to create.</span>
+              Great things are done by a series of{' '}
+              <span className="text-aurora">small things brought together.</span>
             </>
           }
         />
