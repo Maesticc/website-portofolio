@@ -311,7 +311,7 @@ export const projects = [
   summary:'A research system that evaluates Retrieval-Augmented Generation against non-RAG approaches for medical question answering using local LLMs.',
   detail:'Built an evaluation pipeline comparing RAG and No-RAG approaches using local Gemma models and Indonesian pharmaceutical data. The RAG pipeline combines dense semantic retrieval, BM25 keyword search, ensemble retrieval, and cross-encoder reranking before generating answers. Both approaches are evaluated using RAGAS-based metrics including answer correctness, answer relevancy, faithfulness, context precision, and context recall.',
   stack: ['Python','RAG','LLM','Gemma','Ollama','ChromaDB','BAAI BGE-M3','BM25','RAGAS'],
-  url: 'https://github.com/Maesticc/crosslingual-medical-rag',
+  url: 'https://ieeexplore.ieee.org/document/11715110',
 },
 {
   id: 'bukacv',
