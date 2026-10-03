@@ -175,7 +175,7 @@ website/
 | **Smart Triage** — AI emergency triage | AI / Machine Learning | Python · Streamlit · Transformers | [Visit ↗](https://optimization-healthcare-ai-vfgn3u28mpecacpxfii9dy.streamlit.app/) |
 | **RPS Battle Arena** — adaptive game AI | AI / Machine Learning | Python · JS · Markov model | [Repo ↗](https://github.com/Maesticc/RPS-Arena) |
 | **Symptom → Disease Classification** | AI / Machine Learning | Python · NLP · Scikit-learn | [Visit ↗](https://ml-finalproject-group-7-lf01.streamlit.app/) |
-| **Medical RAG Evaluation** — local LLMs | LLM / RAG | Python · Gemma · ChromaDB · RAGAS | [Repo ↗](https://github.com/Maesticc/crosslingual-medical-rag) |
+| **Medical RAG Evaluation** — local LLMs | LLM / RAG | Python · Gemma · ChromaDB · RAGAS | [Paper ↗](https://ieeexplore.ieee.org/document/11715110) |
 | **BukaCV** — document scanner | Computer Vision | Python · Flask · OpenCV · Flutter | [Repo ↗](https://github.com/Maesticc/bukacv) |
 
 </details>
